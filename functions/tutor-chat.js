@@ -53,12 +53,15 @@ export default async function handler(req, ctx) {
       ? "In 2 short sentences: name the specific error the student made (use the diagnosis), then offer to walk through it."
       : (userText ?? "Help the student.");
 
+  // History rides BEFORE the current ask — the conversation must END with the
+  // user turn (Gemini returns empty text when the last message is the model's).
+  const past = (Array.isArray(history) ? history.slice(-6) : [])
+    .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim());
   const messages = [
     { role: "system", content: system },
-    { role: "user", content: `${ctxBlock}\n\n---\n${ask}` },
-    ...(Array.isArray(history) ? history.slice(-6) : []),
+    ...past,
+    { role: "user", content: `${ctxBlock}\n\n---\n${ask}${mode === "chat" && userText ? `\n\nSTUDENT'S QUESTION: ${userText}` : ""}` },
   ];
-  if (mode === "chat" && userText) messages.push({ role: "user", content: userText });
 
   // Gateway-first, Vertex-failover: during the event the platform gateway's
   // upstream (OpenRouter) ran out of credits — Sage stays up either way.
