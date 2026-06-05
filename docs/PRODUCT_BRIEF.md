@@ -218,3 +218,11 @@ spaced-rep nudge triggers (keep post-session nudge) → micro-lessons ("We do" f
 - Auth: email/password + OAuth only — **NO native phone/OTP** → custom OTP over iMessage via otp_codes table (as pre-planned fallback); Butterbase auth backs admin portal.
 - Gateway: `/v1/{app_id}/chat/completions`, same service key, default model set to `anthropic/claude-haiku-4.5` (300+ models incl. gemini-2.5-flash). Verified working.
 - Settings live-PATCH by uuid verified — admin config panel demo beat is real.
+
+### XTrace findings (smoke test passed, 2026-06-05)
+- SDK `@xtraceai/memory`; needs `XTRACE_API_KEY` (xtk_) + `XTRACE_ORG_ID` (org_) — both in bot/.env. Base `https://api.production.xtrace.ai`.
+- **BELIEF REVISION PROVEN:** flat present-state claims ("Base identification is one of my strengths") → fact extraction + automatic supersede of the contradicting old fact. `GET /v1/memories/{id}/revisions` returns the chain with `[superseded]` status. THE demo money shot is real.
+- **Phrasing rule:** "Update on X:..." phrasing → extracted as ARTIFACT, no supersede. P3 summarizer must write present-state factual claims, one belief per sentence.
+- Ingest result envelope: `memories_created / memories_updated / memories_superseded`.
+- Facts carry `details.episode_id` (episodes exist server-side); `list({type:"episode"})` returned 0 — surface episodes via search compose mode instead.
+- Smoke test user: `smoke-test-student` (keep out of demo data).
