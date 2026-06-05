@@ -78,14 +78,22 @@ async function toggleVoice() {
 
   btn.textContent = "Connecting…";
   try {
+    // local demo machine: direct to Vertex with the locally-served key.
+    // public site: through the voice-proxy Durable Object — the key lives
+    // server-side in the DO env, the browser never sees it.
     let key = null;
     try { key = (await (await fetch("/api/voice-config")).json()).key; } catch {}
-    if (!key) {
-      sysmsg("🎤 Voice runs on the demo machine (the key never ships to the public site). Use the chat tutor here, or visit the demo station for the full voice experience.");
-      btn.textContent = "🎤 Voice (demo machine only)";
-      return;
+    let wsUrl;
+    if (key) {
+      wsUrl = `wss://aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1beta1.LlmBidiService/BidiGenerateContent?key=${key}`;
+    } else {
+      const tok = typeof session !== "undefined" && session?.web_token
+        ? session.web_token
+        : new URLSearchParams(location.search).get("token");
+      if (!tok) { sysmsg("Start a sprint first — voice attaches to your session."); btn.textContent = "🎤 Talk it through (voice)"; return; }
+      wsUrl = `wss://sage-tutor.butterbase.dev/_do/voice-proxy/${tok}?session=${tok}`;
     }
-    ws = new WebSocket(`wss://aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1beta1.LlmBidiService/BidiGenerateContent?key=${key}`);
+    ws = new WebSocket(wsUrl);
     ws.onmessage = async (ev) => {
       const data = JSON.parse(typeof ev.data === "string" ? ev.data : await ev.data.text());
       if (data.setupComplete) {
