@@ -1,0 +1,37 @@
+{
+  "components": [
+    {
+      "id": "chat_1",
+      "provider": "chat",
+      "name": "Chat",
+      "config": { "hideForm": true, "mode": "Source", "parameters": {}, "type": "chat" },
+      "ui": { "position": { "x": 20, "y": 200 }, "nodeType": "default", "formDataValid": true }
+    },
+    {
+      "id": "llm_gateway_1",
+      "provider": "llm_openai_api",
+      "name": "Butterbase Gateway LLM",
+      "config": {
+        "profile": "custom",
+        "custom": {
+          "model": "anthropic/claude-haiku-4.5",
+          "base_url": "${ROCKETRIDE_BUTTERBASE_BASE_URL}",
+          "modelTotalTokens": 32768,
+          "apikey": "${ROCKETRIDE_BUTTERBASE_KEY}"
+        },
+        "name": "Butterbase Gateway",
+        "parameters": {}
+      },
+      "ui": { "position": { "x": 240, "y": 200 }, "nodeType": "default", "formDataValid": true },
+      "input": [ { "lane": "questions", "from": "chat_1" } ]
+    },
+    {
+      "id": "response_answers_1",
+      "provider": "response_answers",
+      "name": "Return Answers",
+      "config": { "laneName": "answers" },
+      "ui": { "position": { "x": 460, "y": 200 }, "nodeType": "default", "formDataValid": true },
+      "input": [ { "lane": "answers", "from": "llm_gateway_1" } ]
+    }
+  ]
+}

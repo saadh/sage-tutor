@@ -1,0 +1,82 @@
+{
+  "components": [
+    {
+      "id": "chat_1",
+      "provider": "chat",
+      "name": "Chat",
+      "config": { "hideForm": true, "mode": "Source", "parameters": {}, "type": "chat" },
+      "ui": { "position": { "x": 20, "y": 200 }, "nodeType": "default", "formDataValid": true }
+    },
+    {
+      "id": "agent_sage_1",
+      "provider": "agent_rocketride",
+      "name": "Sage Tutor Agent",
+      "config": {
+        "instructions": [
+          "You are Sage, a warm, brief GMAT/GRE quant tutor speaking over iMessage. Never corporate, never long-winded. 2-4 sentences max unless walking through a solution.",
+          "You receive structured context: the question, the student's answer, the correct answer, the verified rationale, and a pre-generated misconception diagnosis for the chosen distractor.",
+          "Ground EVERYTHING in the provided rationale. Never invent alternative solution paths. Never reveal answers to future questions.",
+          "When the student is wrong: name the specific error from the diagnosis in one sentence, then offer to walk through it.",
+          "Use xtrace tools when student history would help: call xtrace.recall to check what this student struggles with, and reference it naturally ('this is that base-identification trap again').",
+          "When asked for a walkthrough: go step by step from the rationale, one idea per sentence, and end with a check question."
+        ],
+        "max_waves": 8,
+        "parameters": {}
+      },
+      "ui": { "position": { "x": 260, "y": 200 }, "nodeType": "default", "formDataValid": true },
+      "input": [ { "lane": "questions", "from": "chat_1" } ]
+    },
+    {
+      "id": "memory_internal_1",
+      "provider": "memory_internal",
+      "name": "Memory (Internal)",
+      "config": { "type": "memory_internal" },
+      "ui": { "position": { "x": 200, "y": 380 }, "nodeType": "default", "formDataValid": true },
+      "control": [ { "classType": "memory", "from": "agent_sage_1" } ]
+    },
+    {
+      "id": "tool_xtrace_memory_1",
+      "provider": "tool_xtrace_memory",
+      "name": "xTrace Memory",
+      "config": {
+        "api_key": "${ROCKETRIDE_XTRACE_API_KEY}",
+        "org_id": "${ROCKETRIDE_XTRACE_ORG_ID}",
+        "group_ids": "",
+        "show_advanced": false,
+        "type": "tool_xtrace_memory",
+        "user_id": "${ROCKETRIDE_SAGE_USER_ID}",
+        "agent_id": "sage",
+        "search_mode": "compose",
+        "parameters": {}
+      },
+      "ui": { "position": { "x": 360, "y": 380 }, "nodeType": "default", "formDataValid": true },
+      "control": [ { "classType": "tool", "from": "agent_sage_1" } ]
+    },
+    {
+      "id": "llm_gateway_1",
+      "provider": "llm_openai_api",
+      "name": "Butterbase Gateway LLM",
+      "config": {
+        "profile": "custom",
+        "custom": {
+          "model": "anthropic/claude-haiku-4.5",
+          "base_url": "${ROCKETRIDE_BUTTERBASE_BASE_URL}",
+          "modelTotalTokens": 32768,
+          "apikey": "${ROCKETRIDE_BUTTERBASE_KEY}"
+        },
+        "name": "Butterbase Gateway",
+        "parameters": {}
+      },
+      "ui": { "position": { "x": 520, "y": 380 }, "nodeType": "default", "formDataValid": true },
+      "control": [ { "classType": "llm", "from": "agent_sage_1" } ]
+    },
+    {
+      "id": "response_answers_1",
+      "provider": "response_answers",
+      "name": "Return Answers",
+      "config": { "laneName": "answers" },
+      "ui": { "position": { "x": 520, "y": 200 }, "nodeType": "default", "formDataValid": true },
+      "input": [ { "lane": "answers", "from": "agent_sage_1" } ]
+    }
+  ]
+}
