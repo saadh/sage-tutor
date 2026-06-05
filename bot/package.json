@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --env-file-if-exists=.env --import tsx echo.ts",
     "smoke:xtrace": "node --env-file-if-exists=.env --import tsx xtrace-smoke.ts",
-    "dev:sage": "node --env-file-if-exists=.env --import tsx sage.ts"
+    "dev:sage": "node --env-file-if-exists=.env --import tsx sage.ts",
+    "seed:demo": "node --env-file-if-exists=.env --import tsx seed-demo.ts"
   },
   "keywords": [],
   "author": "",

@@ -74,9 +74,9 @@ async function recallFast(xtraceId: string, budgetMs = 2500): Promise<string | n
 /** One-line memory greeting from recalled facts. Template, zero LLM latency. */
 function memoryLine(ctx: string | null): string | null {
   if (!ctx) return null;
-  const struggle = ctx.match(/struggles? with ([a-z\- ]+?)[\.\;]/i)?.[1]?.trim();
+  const struggle = ctx.match(/(?:struggles? with|weak at|worst topic[^a-z]*is) ([a-z\- ]+?)[\.\;,]/i)?.[1]?.trim();
   if (struggle) return `Welcome back — last time ${struggle.replace(/-/g, " ")} gave you trouble. Let's warm up there. 🎯`;
-  const strength = ctx.match(/strong at ([a-z\- ]+?)[\.\;]/i)?.[1]?.trim();
+  const strength = ctx.match(/strong at ([a-z\- ]+?)[\.\;,]/i)?.[1]?.trim();
   if (strength) return `Welcome back — ${strength.replace(/-/g, " ")} is a strength now. Let's push further. 🎯`;
   return `Welcome back — picking up where we left off. 🎯`;
 }
@@ -314,6 +314,8 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
 let { PROJECT_ID, PROJECT_SECRET, MY_PHONE } = process.env;
 if (PROJECT_ID?.startsWith("paste-your")) PROJECT_ID = PROJECT_SECRET = undefined;
 
+let imSendTo: ((phone: string, text: string) => Promise<void>) | undefined;
+
 async function makeApp() {
   if (PROJECT_ID && PROJECT_SECRET) {
     const app = await Spectrum({
@@ -322,12 +324,15 @@ async function makeApp() {
       providers: [terminal.config(), imessage.config()],
     });
     console.log("Sage up — terminal + iMessage providers active.");
+    const im = imessage(app);
+    imSendTo = async (phone: string, text: string) => {
+      const target = await im.user(phone);
+      const space = await im.space(target);
+      await space.send(text);
+    };
     if (MY_PHONE) {
       try {
-        const im = imessage(app);
-        const me = await im.user(MY_PHONE);
-        const space = await im.space(me);
-        await space.send(`Sage here 🎓 Your adaptive quant tutor is live. Text "start" for a 10-question sprint.`);
+        await imSendTo(MY_PHONE, `Sage here 🎓 Your adaptive quant tutor is live. Text "start" for a 10-question sprint.`);
         console.log(`Outbound hello sent to ${MY_PHONE}.`);
       } catch (err) {
         console.error("Outbound iMessage failed:", err);
@@ -346,7 +351,7 @@ const app = await makeApp();
 await loadServableQuestions().then((qs) => console.log(`✓ ${qs.length} servable questions cached from Butterbase`));
 const demoXtraceId = `student-${(MY_PHONE ?? "demo").replace(/[^0-9a-zA-Z]/g, "")}`;
 await initTutorPipeline(demoXtraceId);
-startWebServer(8420); // tutor room + /api proxy
+startWebServer(8420, { sendTo: imSendTo, geminiKey: process.env.GEMINI_API_KEY }); // web layer + APIs
 
 for await (const [space, message] of app.messages) {
   if (message.content.type !== "text") continue;

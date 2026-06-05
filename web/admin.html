@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sage — Admin</title>
+<style>
+  :root { --bg:#f7f6f3; --card:#fff; --ink:#1a1a18; --muted:#8a8782; --accent:#2f6f4f;
+    --accent-soft:#e8f2ec; --wrong:#b4452f; --gold:#c9a227; --border:#e7e4de; --radius:14px; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:28px 16px; }
+  .wrap { max-width:1100px; margin:0 auto; }
+  .brand { display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+  .brand h1 { font-size:20px; } .leaf { color:var(--accent); }
+  .brand .tag { color:var(--muted); font-size:13px; }
+  .panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:880px){ .panels{grid-template-columns:1fr} }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
+  .card h2 { font-size:15px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .full { grid-column:1 / -1; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th { text-align:left; color:var(--muted); font-weight:600; font-size:11.5px; text-transform:uppercase;
+    letter-spacing:.6px; padding:6px 8px; border-bottom:1px solid var(--border); }
+  td { padding:8px; border-bottom:1px solid var(--border); }
+  .stat { display:inline-block; margin-right:28px; }
+  .stat .n { font-size:30px; font-weight:700; letter-spacing:-0.5px; }
+  .stat .l { color:var(--muted); font-size:12.5px; }
+  input.val { width:100%; padding:7px 9px; border:1.5px solid var(--border); border-radius:8px; font-family:inherit; font-size:13.5px; }
+  input.val:focus { border-color:var(--accent); outline:none; }
+  .saved { color:var(--accent); font-size:12px; font-weight:600; }
+  .desc { color:var(--muted); font-size:12px; }
+  .live { font-size:11.5px; background:var(--accent-soft); color:var(--accent); border-radius:99px; padding:3px 10px; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><h1><span class="leaf">●</span> Sage Admin</h1>
+    <span class="tag">production controls — config changes apply live, no redeploy</span></div>
+  <div class="panels">
+    <div class="card full"><h2>📊 Usage <span class="live" id="liveTag">live</span></h2><div id="usage">loading…</div></div>
+    <div class="card full"><h2>⚙️ Runtime config <span class="live">edits apply on the bot's next read</span></h2>
+      <table id="cfg"><tr><th style="width:200px">Setting</th><th style="width:160px">Value</th><th>Description</th><th style="width:70px"></th></tr></table>
+    </div>
+    <div class="card full"><h2>👥 Students</h2>
+      <table id="users"><tr><th>Phone</th><th>Name</th><th>Sessions</th><th>Accuracy</th><th>Hint rate</th><th>Last active</th></tr></table>
+    </div>
+  </div>
+</div>
+<script>
+const API = "https://api.butterbase.ai/v1/app_7m70nwelqpk6";
+const $ = s => document.querySelector(s);
+const esc = s => { const d = document.createElement("div"); d.textContent = s ?? ""; return d.innerHTML; };
+async function bget(p) { const r = await fetch(API + p); if (!r.ok) throw new Error(p); return r.json(); }
+
+async function loadUsage() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const iso = today.toISOString();
+  const [attempts, sessions, flagged, users] = await Promise.all([
+    bget(`/attempts?select=id,correct,ts&limit=1000&order=ts.desc`),
+    bget(`/sessions?select=id,user_id,started_at,ended_at&limit=500&order=started_at.desc`),
+    bget(`/questions?select=id&needs_review=is.true&limit=1000`),
+    bget(`/users?select=id&limit=500`),
+  ]);
+  const todayAttempts = attempts.filter(a => a.ts >= iso);
+  const todaySessions = sessions.filter(s => s.started_at >= iso);
+  const activeStudents = new Set(todaySessions.map(s => s.user_id)).size;
+  const finished = sessions.filter(s => s.ended_at);
+  const avgMin = finished.length ? Math.round(finished.reduce((acc,s) => acc + (new Date(s.ended_at) - new Date(s.started_at)), 0) / finished.length / 60000) : 0;
+  $("#usage").innerHTML = `
+    <span class="stat"><div class="n">${todayAttempts.length}</div><div class="l">questions answered today</div></span>
+    <span class="stat"><div class="n">${activeStudents}</div><div class="l">active students today</div></span>
+    <span class="stat"><div class="n">${users.length}</div><div class="l">total students</div></span>
+    <span class="stat"><div class="n">${avgMin}m</div><div class="l">avg session length</div></span>
+    <span class="stat"><div class="n">${flagged.length}</div><div class="l">flagged questions (machine-rejected)</div></span>`;
+}
+
+async function loadConfig() {
+  const rows = await bget(`/settings?select=id,name,value,description&order=name.asc&limit=100`);
+  const tbl = $("#cfg");
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><b>${esc(r.name)}</b></td>
+      <td><input class="val" value="${esc(r.value)}" data-id="${r.id}"></td>
+      <td class="desc">${esc(r.description ?? "")}</td><td class="saved"></td>`;
+    const input = tr.querySelector("input"), saved = tr.querySelector(".saved");
+    input.addEventListener("change", async () => {
+      const res = await fetch(`${API}/settings/${r.id}`, { method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: input.value, updated_at: new Date().toISOString() }) });
+      saved.textContent = res.ok ? "✓ live" : "✗ failed";
+      setTimeout(() => saved.textContent = "", 2500);
+    });
+    tbl.appendChild(tr);
+  }
+}
+
+async function loadUsers() {
+  const [users, sessions, attempts] = await Promise.all([
+    bget(`/users?select=id,phone,name,created_at&limit=200`),
+    bget(`/sessions?select=id,user_id,started_at&limit=1000`),
+    bget(`/attempts?select=id,session_id,correct,hint_count&limit=2000`),
+  ]);
+  const sessByUser = {}; sessions.forEach(s => (sessByUser[s.user_id] ||= []).push(s));
+  const attBySess = {}; attempts.forEach(a => (attBySess[a.session_id] ||= []).push(a));
+  const tbl = $("#users");
+  for (const u of users) {
+    const ss = sessByUser[u.id] ?? [];
+    const atts = ss.flatMap(s => attBySess[s.id] ?? []);
+    const acc = atts.length ? Math.round(100 * atts.filter(a => a.correct).length / atts.length) + "%" : "—";
+    const hint = atts.length ? Math.round(100 * atts.filter(a => a.hint_count > 0).length / atts.length) + "%" : "—";
+    const last = ss.length ? new Date(Math.max(...ss.map(s => +new Date(s.started_at)))).toLocaleString() : "—";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${esc(u.phone)}</td><td>${esc(u.name ?? "—")}</td><td>${ss.length}</td><td>${acc}</td><td>${hint}</td><td>${last}</td>`;
+    tbl.appendChild(tr);
+  }
+}
+
+loadUsage().catch(console.error);
+loadConfig().catch(console.error);
+loadUsers().catch(console.error);
+setInterval(() => { $("#usage").innerHTML = ""; loadUsage().catch(console.error); }, 15000);
+</script>
+</body>
+</html>

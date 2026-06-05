@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sage — the tutor that never forgets you</title>
+<style>
+  :root { --bg:#f7f6f3; --card:#fff; --ink:#1a1a18; --muted:#8a8782; --accent:#2f6f4f;
+    --accent-soft:#e8f2ec; --gold:#c9a227; --border:#e7e4de; --radius:14px; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); min-height:100vh; }
+  .hero { max-width:980px; margin:0 auto; padding:64px 24px 40px; text-align:center; }
+  .leaf { color:var(--accent); }
+  h1 { font-size:44px; letter-spacing:-1.2px; line-height:1.15; margin:18px 0 14px; }
+  .sub { color:var(--muted); font-size:18px; line-height:1.6; max-width:620px; margin:0 auto 16px; }
+  .pill { display:inline-flex; gap:8px; align-items:center; font-size:13px; background:var(--accent-soft);
+    color:var(--accent); padding:6px 14px; border-radius:99px; font-weight:600; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; max-width:880px; margin:36px auto; padding:0 24px; }
+  @media (max-width:760px){ .grid{grid-template-columns:1fr} }
+  .feat { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; text-align:left; }
+  .feat b { display:block; margin-bottom:6px; font-size:15px; }
+  .feat p { color:var(--muted); font-size:13.5px; line-height:1.55; }
+  .signup { max-width:440px; margin:8px auto 60px; background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); padding:28px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .signup h2 { font-size:18px; margin-bottom:4px; }
+  .signup .s { color:var(--muted); font-size:13px; margin-bottom:18px; }
+  .signup input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px;
+    font-family:inherit; font-size:14px; margin-bottom:10px; }
+  .primary { width:100%; padding:13px; border:none; border-radius:10px; background:var(--accent);
+    color:#fff; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .primary:disabled { opacity:.5; }
+  .note { font-size:12.5px; color:var(--muted); margin-top:12px; line-height:1.5; }
+  .ok { background:var(--accent-soft); border:1px solid #cfe3d8; border-radius:10px; padding:14px; font-size:14px; line-height:1.5; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
+  footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <span class="pill"><span class="leaf">●</span> Sage · GMAT/GRE quant tutor in your iMessages</span>
+    <h1>The tutor that<br>never forgets you</h1>
+    <p class="sub">Adaptive 10-question sprints over iMessage. Sage learns exactly where you struggle,
+    teaches you at the moment you're stuck, and texts you first when it's time to practice.</p>
+  </div>
+  <div class="grid">
+    <div class="feat"><b>📱 Lives in your texts</b><p>No app to install. Sage texts you a question; you reply A–E. Hints, walkthroughs, and full tutoring in the thread.</p></div>
+    <div class="feat"><b>🧠 Remembers everything</b><p>Every sprint updates a living model of what you know. "Last time geometry gave you trouble — let's warm up there."</p></div>
+    <div class="feat"><b>⚖️ Adapts as you answer</b><p>Two right in a row? Difficulty steps up. Struggling? Sage eases off and teaches instead of punishing.</p></div>
+  </div>
+  <div class="signup" id="signup">
+    <h2>Start practicing in 30 seconds</h2>
+    <p class="s">Sage will text you — reply GO and your first calibration sprint begins.</p>
+    <input id="name" placeholder="Your name">
+    <input id="phone" placeholder="Phone number (e.g. +15551234567)" inputmode="tel">
+    <input id="exam" type="date" title="Exam date (optional)">
+    <button class="primary" id="btn" onclick="signup()">Text me my first sprint →</button>
+    <p class="note">Your phone number is your account — verified by your reply, no password ever.
+    By signing up you agree to receive practice texts from Sage.</p>
+  </div>
+  <footer>Built on RocketRide · Butterbase · XTrace · Photon — <a href="/admin.html">admin</a></footer>
+<script>
+async function signup() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const exam = document.getElementById("exam").value || null;
+  if (!phone.match(/^\+?[0-9 \-()]{8,}$/)) { alert("Enter a valid phone number incl. country code"); return; }
+  const btn = document.getElementById("btn");
+  btn.disabled = true; btn.textContent = "Sending…";
+  try {
+    const r = await fetch("/api/signup", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, exam_date: exam }) });
+    const data = await r.json();
+    if (data.ok) {
+      document.getElementById("signup").innerHTML =
+        `<div class="ok"><b>📲 Check your messages!</b><br>Sage just texted ${data.phone}. Reply <b>GO</b> to verify your number and start your first sprint.</div>`;
+    } else { throw new Error(data.error || "signup failed"); }
+  } catch (e) {
+    btn.disabled = false; btn.textContent = "Text me my first sprint →";
+    alert("Could not reach Sage: " + e.message);
+  }
+}
+</script>
+</body>
+</html>
