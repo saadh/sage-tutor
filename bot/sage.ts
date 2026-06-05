@@ -114,10 +114,17 @@ function lenFor(L: Live, sessionLen: number): number {
 
 /** Picks the next question, updates Live state, returns the card text (null = sprint over). */
 async function nextQuestionCard(L: Live, sessionLen: number): Promise<string | null> {
+  const settings = await loadSettings();
   let questions = await loadServableQuestions();
   if (L.microTopic) {
     const filtered = questions.filter((q) => q.topic === L.microTopic);
     if (filtered.length) questions = filtered; // fall back to full pool if topic exhausted
+  }
+  if (settings.demoMode) {
+    // Photon delivery time scales with message size — on stage, prefer
+    // short-text questions so cards land in seconds, not half a minute.
+    const short = questions.filter((q) => q.question.length <= 220);
+    if (short.length >= 30) questions = short;
   }
   const len = lenFor(L, sessionLen);
   const q = L.state!.history.length >= len ? null : pickQuestion(L.state!, questions, L.mastery);
