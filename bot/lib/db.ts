@@ -89,6 +89,14 @@ export async function getSessionByToken(token: string): Promise<SessionRow | nul
   const rows = await api<SessionRow[]>("GET", `/sessions?web_token=eq.${encodeURIComponent(token)}&limit=1`);
   return rows[0] ?? null;
 }
+/** Most recent unfinished sprint for a user (crash/restart resume). */
+export async function getOpenSession(user_id: string): Promise<(SessionRow & { sprint_state?: any }) | null> {
+  const rows = await api<(SessionRow & { sprint_state?: any })[]>(
+    "GET",
+    `/sessions?user_id=eq.${user_id}&state=eq.in_question&order=started_at.desc&limit=1`,
+  );
+  return rows[0] ?? null;
+}
 
 // ---------- attempts ----------
 export async function insertAttempt(a: {

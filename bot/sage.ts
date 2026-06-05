@@ -13,7 +13,7 @@ import { terminal } from "spectrum-ts/providers/terminal";
 import { imessage } from "spectrum-ts/providers/imessage";
 import crypto from "node:crypto";
 
-import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery } from "./lib/db.ts";
+import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery, getOpenSession } from "./lib/db.ts";
 import { newSprintState, pickQuestion, recordAnswer, entryDifficulty, summarize, type Question, type SprintState, type MasteryRow } from "./lib/engine.ts";
 import { recallStudentContext, recordStruggle, recordSprintEpisode } from "./lib/memory.ts";
 import { initTutorPipeline, tutorRespond } from "./lib/tutor.ts";
@@ -61,6 +61,27 @@ async function ensureLive(senderId: string, name?: string): Promise<Live> {
     sessionId: null, state: null, mastery: await loadMastery(user.id),
     current: null, qSentAt: null, hintRung: 0, lastWrong: null, webToken: null,
   };
+  // RESUME: if a sprint was mid-flight when the process restarted, rehydrate it
+  // from Butterbase so the student can keep answering as if nothing happened.
+  try {
+    const open = await getOpenSession(user.id);
+    if (open?.sprint_state) {
+      const st = typeof open.sprint_state === "string" ? JSON.parse(open.sprint_state) : open.sprint_state;
+      const questions = await loadServableQuestions();
+      const q = questions.find((x) => x.qid === open.current_question_id) ?? null;
+      if (st && q) {
+        L.sessionId = open.id;
+        L.state = st;
+        L.current = q;
+        L.webToken = open.web_token;
+        L.qSentAt = Date.now();
+        L.phase = "in_question";
+        console.log(`resumed sprint ${open.id.slice(0, 8)} for ${senderId} at q=${q.qid}`);
+      }
+    }
+  } catch (e) {
+    console.error("resume failed (fresh start instead):", e);
+  }
   live.set(senderId, L);
   return L;
 }
@@ -363,6 +384,12 @@ const demoXtraceId = `student-${(MY_PHONE ?? "demo").replace(/[^0-9a-zA-Z]/g, ""
 await initTutorPipeline(demoXtraceId);
 startWebServer(8420, { sendTo: imSendTo, geminiKey: process.env.key ?? process.env.GEMINI_API_KEY }); // web layer + APIs
 
+// If the inbound stream ever dies, exit loudly — the supervisor restarts us
+// and sprint resume picks up exactly where the student was.
+process.on("uncaughtException", (e) => { console.error("UNCAUGHT:", e); process.exit(1); });
+process.on("unhandledRejection", (e) => { console.error("UNHANDLED REJECTION:", e); });
+setInterval(() => console.log(`[heartbeat] ${new Date().toISOString()} live-users=${live.size}`), 60_000).unref();
+
 for await (const [space, message] of app.messages) {
   if (message.content.type !== "text") continue;
   const text = message.content.text;
@@ -394,3 +421,7 @@ for await (const [space, message] of app.messages) {
     await space.send("Hit a snag — text me again in a few seconds.").catch(() => {});
   }
 }
+
+// The message iterator returning means the stream closed — restart via supervisor.
+console.error("message stream ended — exiting for supervisor restart");
+process.exit(1);
