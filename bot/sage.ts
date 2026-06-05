@@ -124,6 +124,11 @@ async function startSprint(L: Live, send: (t: string) => Promise<void>) {
   const greet = memoryLine(ctx) ?? `Hi, I'm Sage 🎯 Ten adaptive questions, at your pace.`;
   const card = await nextQuestionCard(L, settings.sessionLen);
   if (!card) return endSprint(L, send);
+  // persist Q1 immediately so the web handoff + resume are exact from the start
+  await updateSession(L.sessionId!, {
+    current_question_id: L.current!.qid,
+    sprint_state: JSON.stringify(L.state),
+  } as any).catch(() => {});
   await send(greet);
   await send(card);
 }
@@ -361,9 +366,12 @@ async function makeApp() {
       const space = await im.space(target);
       await space.send(text);
     };
-    if (MY_PHONE) {
+    // Boot hello DISABLED: it fired on every supervisor restart, flooding the
+    // recipient from a shared sender pool — prime anti-spam throttle bait.
+    // Send manually when needed: SAGE_SEND_HELLO=1 npm run dev:sage
+    if (MY_PHONE && process.env.SAGE_SEND_HELLO === "1") {
       try {
-        await imSendTo(MY_PHONE, `Sage here 🎓 Your adaptive quant tutor is live. Text "start" for a 10-question sprint.`);
+        await imSendTo(MY_PHONE, `Sage here 🎓 Text "start" for a sprint.`);
         console.log(`Outbound hello sent to ${MY_PHONE}.`);
       } catch (err) {
         console.error("Outbound iMessage failed:", err);
