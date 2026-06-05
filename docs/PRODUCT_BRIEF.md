@@ -208,3 +208,13 @@ spaced-rep nudge triggers (keep post-session nudge) → micro-lessons ("We do" f
 - AQuA-RAT data has ~8% broken items even in curated splits — never serve unverified questions.
 - Butterbase MCP tools require session restarted after MCP add. Submission requires Butterbase connection + 30 min.
 - IELTS/TOEFL MCQ banks effectively don't exist publicly (copyright); RACE/SciQ/AGIEval = non-commercial/copyright issues → AQuA-RAT only. Multi-exam = roadmap slide, not build.
+
+### Butterbase platform findings (discovered at event, 2026-06-05)
+- App: `app_7m70nwelqpk6` · API `https://api.butterbase.ai/v1/app_7m70nwelqpk6` · frontend `https://sage-tutor.butterbase.dev` · region us-east-1.
+- **Row ops (GET/PATCH/DELETE by id) require UUID PKs** — text PKs can't be updated/deleted by path. ALL tables use uuid `id`; question's AQuA id lives in unique `qid` column.
+- **jsonb columns must be sent as JSON-encoded STRINGS** in POST bodies (raw arrays/objects → VALIDATION_INVALID_INPUT).
+- **`config` is a reserved route** (`/v1/{app_id}/config` = app configuration) — table renamed to `settings(name unique, value)`. `?key=` query param is also intercepted; use `name`.
+- No filtered DELETE (`?col=eq.x`) — delete by uuid path only.
+- Auth: email/password + OAuth only — **NO native phone/OTP** → custom OTP over iMessage via otp_codes table (as pre-planned fallback); Butterbase auth backs admin portal.
+- Gateway: `/v1/{app_id}/chat/completions`, same service key, default model set to `anthropic/claude-haiku-4.5` (300+ models incl. gemini-2.5-flash). Verified working.
+- Settings live-PATCH by uuid verified — admin config panel demo beat is real.
