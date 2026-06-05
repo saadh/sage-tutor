@@ -46,7 +46,10 @@ const dots = (d: number) => "●".repeat(d) + "○".repeat(5 - d);
 
 function questionCard(q: Question, n: number, total: number): string {
   const choices = q.choices.map((c) => `${c.label}) ${c.text.replace(/^[A-E]\)\s*/, "")}`).join("\n");
-  return `Q${n}/${total} · ${topicName(q.topic)} · ${dots(q.difficulty)}\n\n${q.question}\n\n${choices}\n\nReply A–E. Or "hint" / "help".`;
+  // Photon delivery time scales with message length — keep cards lean.
+  // The how-to footer only rides on the first question.
+  const footer = n === 1 ? `\n\nReply A–E · "hint" · "help" opens the tutor room` : "";
+  return `Q${n}/${total} · ${topicName(q.topic)} · ${dots(q.difficulty)}\n\n${q.question}\n\n${choices}${footer}`;
 }
 
 async function ensureLive(senderId: string, name?: string): Promise<Live> {
@@ -94,12 +97,14 @@ async function startSprint(L: Live, send: (t: string) => Promise<void>) {
   L.microTopic = null;
   L.pendingMicroTopic = null;
 
-  // memory line (hard 2.5s budget) + Q1 — ONE message, quiz starts immediately
+  // memory line (hard 2.5s budget) then Q1 — two SHORT sends beat one long one
+  // (Photon delivery time scales with message size; short messages land in ~1-2s)
   const ctx = await recallFast(L.xtraceId);
   const greet = memoryLine(ctx) ?? `Hi, I'm Sage 🎯 Ten adaptive questions, at your pace.`;
   const card = await nextQuestionCard(L, settings.sessionLen);
   if (!card) return endSprint(L, send);
-  await send(`${greet}\n\n${card}`);
+  await send(greet);
+  await send(card);
 }
 
 /** Effective sprint length: micro-sessions are shorter. */
@@ -142,17 +147,15 @@ async function handleAnswer(L: Live, label: string, send: (t: string) => Promise
   } as any).catch(() => {});
 
   if (result.correct) {
-    let msg = `✓ Correct${secs ? ` — in ${secs}s` : ""}.${secs && secs <= 90 ? " Solid pace for test day." : ""}`;
-    if (L.hintRung > 0) msg += ` (with ${L.hintRung} hint${L.hintRung > 1 ? "s" : ""} — counts toward mastery, not the staircase)`;
+    let msg = `✓ Correct${secs ? ` — ${secs}s` : ""}.${secs && secs <= 90 ? " Solid pace." : ""}`;
+    if (L.hintRung > 0) msg += ` (hints used — mastery credit only)`;
     if (result.adaptNote) msg += `\n⚖️ ${result.adaptNote}`;
     L.lastWrong = null;
-    // verdict + next question in ONE message (latency: every send costs delivery time)
+    // two short sends beat one long one (Photon latency scales with size)
     const card = await nextQuestionCard(L, settings.sessionLen);
-    if (!card) {
-      await send(msg);
-      return endSprint(L, send);
-    }
-    await send(`${msg}\n\n${card}`);
+    await send(msg);
+    if (!card) return endSprint(L, send);
+    await send(card);
     return;
   }
 
@@ -161,15 +164,15 @@ async function handleAnswer(L: Live, label: string, send: (t: string) => Promise
   const diagnosis = q.distractor_diagnoses?.[label];
   L.lastWrong = { q, answer: label };
   const parts = [
-    `✗ Not quite — the answer is ${q.correct}.${diagnosis ? `\n🔍 ${diagnosis}` : ""}`,
+    `✗ The answer is ${q.correct}.${diagnosis ? `\n🔍 ${diagnosis}` : ""}`,
   ];
   if (result.floorRuleFired) {
     recordStruggle(L.xtraceId, q.topic, `Two misses at difficulty 1 indicate a concept gap, not a difficulty problem.`);
-    parts.push(`📚 Flagged ${topicName(q.topic)} for instruction — I'll bring a gentler on-ramp next time.`);
+    parts.push(`📚 Flagged ${topicName(q.topic)} for instruction.`);
   } else if (result.adaptNote) {
     parts.push(`⚖️ ${result.adaptNote}`);
   }
-  parts.push(`Reply "walk" for the full walkthrough, or "next" to keep going.`);
+  parts.push(`"walk" = walkthrough · "next" = keep going`);
   await send(parts.join("\n"));
   L.phase = "awaiting_walkthrough";
 }
@@ -240,16 +243,30 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
   const t = text.trim().toLowerCase();
   const settings = await loadSettings();
 
-  // nudge reply → micro-session on the flagged topic
-  if (L.phase === "idle" && L.pendingMicroTopic && ["go", "yes", "y", "sure", "ok", "let's go", "lets go"].includes(t)) {
-    return startMicroSession(L, L.pendingMicroTopic, send);
+  // ===== global commands — work in EVERY phase (the "help" bug fix) =====
+  if (t === "help" && L.sessionId) {
+    await updateSession(L.sessionId, {
+      current_question_id: (L.lastWrong?.q ?? L.current)?.qid ?? null,
+      sprint_state: JSON.stringify(L.state),
+    } as any).catch(() => {});
+    return send(`Tutor room — same question, talk to me there:\n${WEB_BASE}/sprint.html?token=${L.webToken}`);
   }
-  if (["start", "go", "begin", "practice", "hi", "hello", "hey"].includes(t)) return startSprint(L, send);
   if (t === "stop") {
     if (L.sessionId) await updateSession(L.sessionId, { state: "done", ended_at: new Date().toISOString() } as any).catch(() => {});
     L.phase = "idle";
     return send(`Paused. Text "start" whenever you're ready.`);
   }
+  if (t === "progress" && L.state) {
+    const done = L.state.history.length;
+    const right = L.state.history.filter((h) => h.correct).length;
+    return send(`${done}/${lenFor(L, settings.sessionLen)} answered, ${right} correct, difficulty ${L.state.difficulty}/5.`);
+  }
+
+  // nudge reply → micro-session on the flagged topic
+  if (L.phase === "idle" && L.pendingMicroTopic && ["go", "yes", "y", "sure", "ok", "let's go", "lets go"].includes(t)) {
+    return startMicroSession(L, L.pendingMicroTopic, send);
+  }
+  if (["start", "go", "begin", "practice", "hi", "hello", "hey"].includes(t)) return startSprint(L, send);
 
   if (L.phase === "in_question" && L.current) {
     const label = t.toUpperCase();
@@ -258,31 +275,17 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
       const hints = L.current.hints ?? [];
       if (L.hintRung < hints.length) {
         const h = hints[L.hintRung++];
-        return send(`💡 Hint ${L.hintRung}/3: ${h}`);
+        return send(`💡 ${L.hintRung}/3: ${h}`);
       }
-      return send(`That's all three hints — take your best shot, A–E. A miss teaches us more than a skip.`);
-    }
-    if (t === "help") {
-      // persist current question + engine state so the web room opens EXACTLY here
-      await updateSession(L.sessionId!, {
-        current_question_id: L.current.qid,
-        sprint_state: JSON.stringify(L.state),
-      } as any).catch(() => {});
-      return send(`Let's switch to the tutor room — same question, and you can talk to me there:\n${WEB_BASE}/sprint.html?token=${L.webToken}`);
-    }
-    if (t === "progress") {
-      const done = L.state!.history.length;
-      const right = L.state!.history.filter((h) => h.correct).length;
-      return send(`${done}/${settings.sessionLen} answered, ${right} correct, difficulty ${L.state!.difficulty}/5.`);
+      return send(`That's all three hints — take your best shot, A–E.`);
     }
     // free-text during a question → instant canned nudge (NO agent call in the hot path)
-    return send(`I'm with you — answer A–E when ready, "hint" for a nudge, or "help" to open the tutor room.`);
+    return send(`Answer A–E when ready · "hint" for a nudge · "help" for the tutor room.`);
   }
 
   if (L.phase === "awaiting_walkthrough" && L.lastWrong) {
     const { q, answer } = L.lastWrong;
     if (["walk", "yes", "y", "sure", "ok", "walk me through it", "yes please"].includes(t)) {
-      await send(`On it — give me a few seconds 🧮`); // pipeline call is the one deliberate slow path
       const wt = await tutorRespond({
         intent: "walkthrough", questionText: q.question,
         choices: q.choices.map((c) => `${c.label}) ${c.text}`).join(" "),

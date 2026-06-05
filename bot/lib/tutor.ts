@@ -9,10 +9,12 @@ import { RocketRideClient, Question } from "rocketride";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const PIPE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../pipelines/sage-tutor.pipe");
+const AGENT_PIPE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../pipelines/sage-tutor.pipe");
+const FAST_PIPE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../pipelines/sage-hello.pipe");
 
 let client: RocketRideClient | null = null;
-let token: string | null = null;
+let token: string | null = null; // agent pipeline (xtrace tools, deep work — P3 summaries)
+let fastToken: string | null = null; // single-hop gateway LLM (hot-path tutoring)
 
 export async function initTutorPipeline(xtraceUserId: string): Promise<boolean> {
   try {
@@ -30,14 +32,17 @@ export async function initTutorPipeline(xtraceUserId: string): Promise<boolean> 
       },
     });
     await client.connect();
-    const res = await client.use({ filepath: PIPE });
+    const res = await client.use({ filepath: AGENT_PIPE });
     token = res.token;
-    console.log("✓ RocketRide tutor pipeline loaded:", String(token).slice(0, 12) + "…");
+    const fastRes = await client.use({ filepath: FAST_PIPE });
+    fastToken = fastRes.token;
+    console.log("✓ RocketRide pipelines loaded — agent:", String(token).slice(0, 12) + "… fast:", String(fastToken).slice(0, 12) + "…");
     return true;
   } catch (e) {
     console.error("RocketRide pipeline init failed (tutor falls back to gateway-direct):", e);
     client = null;
     token = null;
+    fastToken = null;
     return false;
   }
 }
@@ -54,29 +59,48 @@ export interface TutorContext {
   freeText?: string;
 }
 
+const PERSONA = "You are Sage, a warm, brief GMAT/GRE quant tutor texting over iMessage. Ground everything in the provided verified rationale — never invent alternative solution paths. HARD LIMIT: at most 4 short sentences / 60 words (long texts deliver slowly).";
+
 export async function tutorRespond(ctx: TutorContext): Promise<string | null> {
-  if (!client || !token) return null;
+  // Hot-path tutoring uses the FAST pipeline (single gateway hop, no agent loop).
+  if (!client || !fastToken) return null;
   try {
     const q = new Question();
+    q.addContext(PERSONA);
     if (ctx.intent === "verdict") {
       q.addContext(`QUESTION: ${ctx.questionText}\nCHOICES: ${ctx.choices}\nSTUDENT ANSWERED: ${ctx.studentAnswer} (WRONG)\nCORRECT: ${ctx.correctAnswer}\nVERIFIED RATIONALE: ${ctx.rationale}\nDISTRACTOR DIAGNOSIS: ${ctx.diagnosis ?? "n/a"}`);
-      q.addQuestion("In 2 short sentences: name the specific error the student made (use the diagnosis), then offer to walk through it. Do not solve the full problem yet.");
+      q.addQuestion("In 2 short sentences: name the specific error (use the diagnosis), then offer a walkthrough.");
     } else if (ctx.intent === "walkthrough") {
       q.addContext(`QUESTION: ${ctx.questionText}\nCHOICES: ${ctx.choices}\nSTUDENT ANSWERED: ${ctx.studentAnswer}\nCORRECT: ${ctx.correctAnswer}\nVERIFIED RATIONALE: ${ctx.rationale}`);
-      if (ctx.freeText) q.addQuestion(`The student asked during the walkthrough: "${ctx.freeText}". Answer grounded in the rationale, briefly, then continue the walkthrough.`);
-      else q.addQuestion("Walk the student through the solution step by step from the rationale. Short sentences. End with: did that click?");
+      if (ctx.freeText) q.addQuestion(`Student asked: "${ctx.freeText}". Answer from the rationale in 2-3 short sentences.`);
+      else q.addQuestion("Walk through the solution from the rationale: the 3-4 key steps, one short sentence each. End with: did that click?");
     } else if (ctx.intent === "greeting") {
       q.addContext(`STUDENT HISTORY (from memory):\n${ctx.studentContext ?? "(new student, no history)"}`);
-      q.addQuestion("Greet the student in 1-2 warm sentences to open a practice sprint. If history shows a struggle topic, reference it naturally and say we'll warm up there. No emoji spam — one max.");
+      q.addQuestion("Greet the student in 1-2 warm sentences to open a sprint. Reference a struggle topic from history if present. One emoji max.");
     } else {
-      if (ctx.questionText) q.addContext(`CURRENT QUESTION: ${ctx.questionText}\nCHOICES: ${ctx.choices}\nRATIONALE (never reveal the final answer directly): ${ctx.rationale}`);
+      if (ctx.questionText) q.addContext(`CURRENT QUESTION: ${ctx.questionText}\nCHOICES: ${ctx.choices}\nRATIONALE (never reveal the answer): ${ctx.rationale}`);
       q.addQuestion(ctx.freeText ?? "");
     }
-    const response: any = await client.chat({ token, question: q });
+    const response: any = await client.chat({ token: fastToken, question: q });
     const ans = response?.data?.answer ?? response?.answers?.[0] ?? (Array.isArray(response) ? response[0] : null);
     return typeof ans === "string" ? ans : ans ? JSON.stringify(ans) : null;
   } catch (e) {
     console.error("tutor pipeline call failed:", e);
+    return null;
+  }
+}
+
+/** Deep/async work (P3 session summaries) — the agent pipeline with xtrace tools. */
+export async function agentRespond(prompt: string): Promise<string | null> {
+  if (!client || !token) return null;
+  try {
+    const q = new Question();
+    q.addQuestion(prompt);
+    const response: any = await client.chat({ token, question: q });
+    const ans = response?.data?.answer ?? response?.answers?.[0] ?? (Array.isArray(response) ? response[0] : null);
+    return typeof ans === "string" ? ans : null;
+  } catch (e) {
+    console.error("agent pipeline call failed:", e);
     return null;
   }
 }
