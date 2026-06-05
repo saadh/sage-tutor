@@ -11,6 +11,25 @@ export default async function handler(req, ctx) {
 
   const { mode, question, choices, studentAnswer, correctAnswer, rationale, diagnosis, userText, history } = body;
 
+  // RAG grounding: open chat questions with no rationale in context get
+  // grounded in the verified solutions corpus (per-topic worked rationales).
+  let ragBlock = "";
+  if (mode === "chat" && userText && !rationale) {
+    try {
+      const rr = await fetch(`https://api.butterbase.ai/v1/${ctx.env.APP_ID}/rag/collections/rationales/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${ctx.env.GATEWAY_KEY}` },
+        body: JSON.stringify({ query: userText, top_k: 3 }),
+      });
+      if (rr.ok) {
+        const data = await rr.json();
+        const chunks = (data.chunks ?? []).filter((c) => c.score > 0.3);
+        if (chunks.length) ragBlock = "RELEVANT WORKED SOLUTIONS (verified corpus):\n" + chunks.map((c) => c.content.slice(0, 600)).join("\n---\n");
+      }
+    } catch {}
+  }
+
+
   const system = [
     "You are Sage, a warm, brief GMAT/GRE quant tutor. Short sentences. No corporate filler.",
     "Ground EVERYTHING in the provided verified rationale. Never invent alternative solution paths.",
@@ -24,6 +43,7 @@ export default async function handler(req, ctx) {
     correctAnswer ? `CORRECT ANSWER: ${correctAnswer}` : "",
     rationale ? `VERIFIED RATIONALE: ${rationale}` : "",
     diagnosis ? `DISTRACTOR DIAGNOSIS: ${diagnosis}` : "",
+    ragBlock,
   ].filter(Boolean).join("\n");
 
   const ask =
