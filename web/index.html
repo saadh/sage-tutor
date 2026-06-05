@@ -67,17 +67,31 @@ async function signup() {
   if (!phone.match(/^\+?[0-9 \-()]{8,}$/)) { alert("Enter a valid phone number incl. country code"); return; }
   const btn = document.getElementById("btn");
   btn.disabled = true; btn.textContent = "Sending…";
+  const norm = phone.replace(/[^0-9+]/g, "");
+  const success = () => document.getElementById("signup").innerHTML =
+    `<div class="ok"><b>📲 Check your messages!</b><br>Sage will text ${norm} shortly. Reply <b>GO</b> to verify your number and start your first sprint.</div>`;
   try {
+    // local bot API (demo machine) — texts immediately
     const r = await fetch("/api/signup", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, phone, exam_date: exam }) });
+      body: JSON.stringify({ name, phone: norm, exam_date: exam }) });
     const data = await r.json();
-    if (data.ok) {
-      document.getElementById("signup").innerHTML =
-        `<div class="ok"><b>📲 Check your messages!</b><br>Sage just texted ${data.phone}. Reply <b>GO</b> to verify your number and start your first sprint.</div>`;
-    } else { throw new Error(data.error || "signup failed"); }
+    if (data.ok) return success();
+    throw new Error(data.error || "signup failed");
   } catch (e) {
-    btn.disabled = false; btn.textContent = "Text me my first sprint →";
-    alert("Could not reach Sage: " + e.message);
+    // deployed (static) host: write the signup straight to Butterbase —
+    // the Sage bot watches for new students and sends the verification text.
+    try {
+      const r2 = await fetch("https://api.butterbase.ai/v1/app_7m70nwelqpk6/users", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: norm, name: name || null, exam_date: exam }) });
+      if (r2.ok || r2.status === 409) return success(); // 409/unique = already signed up
+      const errBody = await r2.text();
+      if (errBody.includes("UNIQUE")) return success();
+      throw new Error("signup storage failed");
+    } catch (e2) {
+      btn.disabled = false; btn.textContent = "Text me my first sprint →";
+      alert("Could not reach Sage: " + e2.message);
+    }
   }
 }
 </script>

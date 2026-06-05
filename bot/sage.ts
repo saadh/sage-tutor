@@ -398,6 +398,37 @@ process.on("uncaughtException", (e) => { console.error("UNCAUGHT:", e); process.
 process.on("unhandledRejection", (e) => { console.error("UNHANDLED REJECTION:", e); });
 setInterval(() => console.log(`[heartbeat] ${new Date().toISOString()} live-users=${live.size}`), 60_000).unref();
 
+// Signup watcher: the DEPLOYED landing page writes user rows straight to
+// Butterbase (it can't reach this process). Poll for new students and send
+// the "reply GO" verification text. Dedupe via nudges(trigger_type=signup_hello).
+if (imSendTo) {
+  const greeted = new Set<string>();
+  const pollSignups = async () => {
+    try {
+      const recent = await fetch(`${process.env.BUTTERBASE_URL}/users?order=created_at.desc&limit=10&select=id,phone,name,created_at`, {
+        headers: { Authorization: `Bearer ${process.env.BUTTERBASE_API_KEY}` },
+      }).then((r) => r.json());
+      for (const u of recent) {
+        if (greeted.has(u.id)) continue;
+        if (Date.now() - +new Date(u.created_at) > 15 * 60_000) { greeted.add(u.id); continue; } // only fresh signups
+        const dupe = await fetch(`${process.env.BUTTERBASE_URL}/nudges?user_id=eq.${u.id}&trigger_type=eq.signup_hello&limit=1`, {
+          headers: { Authorization: `Bearer ${process.env.BUTTERBASE_API_KEY}` },
+        }).then((r) => r.json());
+        greeted.add(u.id);
+        if (dupe.length) continue;
+        const body = `Hi${u.name ? " " + u.name : ""}, Sage here 🎓 Reply GO to verify this number and start your first calibration sprint.`;
+        await imSendTo!(u.phone, body);
+        await insertNudge({ user_id: u.id, trigger_type: "signup_hello", body, sent_at: new Date().toISOString() });
+        console.log(`signup hello sent to ${u.phone}`);
+      }
+    } catch (e) {
+      console.error("signup poll failed (retrying next tick):", e);
+    }
+  };
+  setInterval(pollSignups, 20_000).unref();
+  pollSignups();
+}
+
 for await (const [space, message] of app.messages) {
   if (message.content.type !== "text") continue;
   const text = message.content.text;
