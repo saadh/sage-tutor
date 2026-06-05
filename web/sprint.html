@@ -321,23 +321,36 @@ async function askSage(mode, userText = null, diagnosis = null) {
     history: chatHistory.slice(-6) });
   // path 1: local bot API (demo machine). path 2 (deployed): demo end-user
   // JWT → Butterbase function directly. One retry across both.
+  const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
   const tryLocal = async () => {
     const r = await fetch("/api/tutor-chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: payload });
+    if (!r.ok) throw new Error(`local api ${r.status}`);
     return r.json();
+  };
+  const getJwt = async () => {
+    // localStorage cache: the auth endpoint is rate-limited (10/15min) —
+    // a JWT lasts an hour, so login once and reuse across answers AND reloads.
+    let jwt = localStorage.getItem("sage_demo_jwt");
+    if (jwt) return jwt;
+    const login = await fetch(`https://api.butterbase.ai/auth/app_7m70nwelqpk6/login`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "web-demo@sage-tutor.dev", password: "SageDemo2026!web" }) });
+    if (!login.ok) throw new Error(`login ${login.status}: ${(await login.text()).slice(0, 80)}`);
+    jwt = (await login.json()).access_token;
+    if (!jwt) throw new Error("login returned no token");
+    localStorage.setItem("sage_demo_jwt", jwt);
+    return jwt;
   };
   const tryFn = async () => {
-    if (!window._sageJwt) {
-      const login = await fetch(`https://api.butterbase.ai/auth/app_7m70nwelqpk6/login`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "web-demo@sage-tutor.dev", password: "SageDemo2026!web" }) });
-      window._sageJwt = (await login.json()).access_token;
-    }
+    const jwt = await getJwt();
     const r = await fetch(`https://api.butterbase.ai/v1/app_7m70nwelqpk6/fn/tutor-chat`, {
-      method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${window._sageJwt}` }, body: payload });
-    if (r.status === 401) { window._sageJwt = null; throw new Error("jwt expired"); }
+      method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` }, body: payload });
+    if (r.status === 401) { localStorage.removeItem("sage_demo_jwt"); throw new Error("jwt expired"); }
+    if (!r.ok) throw new Error(`fn ${r.status}: ${(await r.text()).slice(0, 80)}`);
     return r.json();
   };
-  for (const attempt of [tryLocal, tryFn, tryFn]) {
+  let lastErr = "";
+  for (const attempt of isLocal ? [tryLocal, tryFn, tryFn] : [tryFn, tryFn]) {
     try {
       const data = await attempt();
       if (data.text) {
@@ -345,10 +358,14 @@ async function askSage(mode, userText = null, diagnosis = null) {
         chatHistory.push({ role: "user", content: userText ?? mode }, { role: "assistant", content: data.text });
         return;
       }
-      console.warn("tutor-chat: no text:", data);
-    } catch (e) { console.warn("tutor-chat path failed:", e); }
+      lastErr = "no-text: " + JSON.stringify(data).slice(0, 140);
+      console.warn("tutor-chat:", lastErr);
+    } catch (e) {
+      lastErr = (e && e.message) ? e.message : String(e);
+      console.warn("tutor-chat path failed:", e);
+    }
   }
-  sagemsg("Hmm, I hit a snag — ask me again?");
+  sagemsg(`Hmm, I hit a snag — ask me again? [debug: ${lastErr.slice(0, 160)}]`);
 }
 function sendChat() { const v = $("#chatin").value.trim(); if (!v) return; $("#chatin").value = ""; askSage("chat", v); }
 
