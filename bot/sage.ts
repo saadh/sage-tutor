@@ -17,6 +17,7 @@ import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, up
 import { newSprintState, pickQuestion, recordAnswer, entryDifficulty, summarize, type Question, type SprintState, type MasteryRow } from "./lib/engine.ts";
 import { recallStudentContext, recordStruggle, recordSprintEpisode } from "./lib/memory.ts";
 import { initTutorPipeline, tutorRespond } from "./lib/tutor.ts";
+import { startWebServer } from "./web-server.ts";
 
 const WEB_BASE = process.env.SAGE_WEB_BASE ?? "http://localhost:8420";
 
@@ -103,7 +104,11 @@ async function handleAnswer(L: Live, label: string, send: (t: string) => Promise
     correct: result.correct, hint_count: L.hintRung, latency_s: secs, surface: "imessage",
   });
   await saveMastery(L.userId, result.masteryUpdate as any).catch((e) => console.error("mastery save:", e));
-  await updateSession(L.sessionId!, { current_question_id: q.qid, question_index: L.state!.history.length } as any).catch(() => {});
+  await updateSession(L.sessionId!, {
+    current_question_id: q.qid,
+    question_index: L.state!.history.length,
+    sprint_state: JSON.stringify(L.state), // jsonb → JSON string (platform finding); the iMessage→web bridge
+  } as any).catch(() => {});
 
   if (result.correct) {
     let msg = `✓ Correct${secs ? ` — in ${secs}s` : ""}.${secs && secs <= 90 ? " Solid pace for test day." : ""}`;
@@ -174,6 +179,11 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
       return send(`That's all three hints — take your best shot, A–E. A miss teaches us more than a skip.`);
     }
     if (t === "help") {
+      // persist current question + engine state so the web room opens EXACTLY here
+      await updateSession(L.sessionId!, {
+        current_question_id: L.current.qid,
+        sprint_state: JSON.stringify(L.state),
+      } as any).catch(() => {});
       return send(`Let's switch to the tutor room — same question, and you can talk to me there:\n${WEB_BASE}/sprint.html?token=${L.webToken}`);
     }
     if (t === "progress") {
@@ -255,6 +265,7 @@ const app = await makeApp();
 await loadServableQuestions().then((qs) => console.log(`✓ ${qs.length} servable questions cached from Butterbase`));
 const demoXtraceId = `student-${(MY_PHONE ?? "demo").replace(/[^0-9a-zA-Z]/g, "")}`;
 await initTutorPipeline(demoXtraceId);
+startWebServer(8420); // tutor room + /api proxy
 
 for await (const [space, message] of app.messages) {
   if (message.content.type !== "text") continue;

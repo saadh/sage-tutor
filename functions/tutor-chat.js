@@ -1,0 +1,52 @@
+/**
+ * Sage tutor-chat — Butterbase function.
+ * The web tutor room's LLM brain: walkthroughs and free-text Q&A,
+ * grounded in the verified rationale. Calls the AI Model Gateway
+ * server-side so no key ever reaches the browser.
+ */
+export default async function handler(req, ctx) {
+  if (req.method !== "POST") return new Response("POST only", { status: 405 });
+  let body;
+  try { body = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
+
+  const { mode, question, choices, studentAnswer, correctAnswer, rationale, diagnosis, userText, history } = body;
+
+  const system = [
+    "You are Sage, a warm, brief GMAT/GRE quant tutor. Short sentences. No corporate filler.",
+    "Ground EVERYTHING in the provided verified rationale. Never invent alternative solution paths.",
+    "Never reveal answers to questions the student hasn't attempted yet.",
+  ].join(" ");
+
+  const ctxBlock = [
+    question ? `QUESTION: ${question}` : "",
+    choices ? `CHOICES: ${choices}` : "",
+    studentAnswer ? `STUDENT ANSWERED: ${studentAnswer}` : "",
+    correctAnswer ? `CORRECT ANSWER: ${correctAnswer}` : "",
+    rationale ? `VERIFIED RATIONALE: ${rationale}` : "",
+    diagnosis ? `DISTRACTOR DIAGNOSIS: ${diagnosis}` : "",
+  ].filter(Boolean).join("\n");
+
+  const ask =
+    mode === "walkthrough"
+      ? "Walk the student through the solution step by step from the rationale. Short sentences, one idea each. End with: did that click?"
+      : mode === "verdict"
+      ? "In 2 short sentences: name the specific error the student made (use the diagnosis), then offer to walk through it."
+      : (userText ?? "Help the student.");
+
+  const messages = [
+    { role: "system", content: system },
+    { role: "user", content: `${ctxBlock}\n\n---\n${ask}` },
+    ...(Array.isArray(history) ? history.slice(-6) : []),
+  ];
+  if (mode === "chat" && userText) messages.push({ role: "user", content: userText });
+
+  const res = await fetch(`https://api.butterbase.ai/v1/${ctx.env.APP_ID}/chat/completions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${ctx.env.GATEWAY_KEY}` },
+    body: JSON.stringify({ messages, max_tokens: 500, temperature: 0.4, stream: false }),
+  });
+  if (!res.ok) return new Response(JSON.stringify({ error: `gateway ${res.status}` }), { status: 502, headers: { "Content-Type": "application/json" } });
+  const data = await res.json();
+  const text = data.choices?.[0]?.message?.content ?? "";
+  return new Response(JSON.stringify({ text }), { headers: { "Content-Type": "application/json" } });
+}
