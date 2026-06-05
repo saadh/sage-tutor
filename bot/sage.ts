@@ -361,7 +361,7 @@ const app = await makeApp();
 await loadServableQuestions().then((qs) => console.log(`✓ ${qs.length} servable questions cached from Butterbase`));
 const demoXtraceId = `student-${(MY_PHONE ?? "demo").replace(/[^0-9a-zA-Z]/g, "")}`;
 await initTutorPipeline(demoXtraceId);
-startWebServer(8420, { sendTo: imSendTo, geminiKey: process.env.GEMINI_API_KEY }); // web layer + APIs
+startWebServer(8420, { sendTo: imSendTo, geminiKey: process.env.key ?? process.env.GEMINI_API_KEY }); // web layer + APIs
 
 for await (const [space, message] of app.messages) {
   if (message.content.type !== "text") continue;

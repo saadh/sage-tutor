@@ -2,12 +2,11 @@
  *  function declaration, takes text input, and streams AUDIO back. */
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY!, httpOptions: { apiVersion: "v1alpha" } });
+const ai = new GoogleGenAI({ vertexai: true, apiKey: process.env.key ?? process.env.GEMINI_API_KEY! });
 
 const MODELS = [
-  "gemini-2.5-flash-native-audio-preview-09-2025",
-  "gemini-2.5-flash-preview-native-audio-dialog",
-  "gemini-live-2.5-flash-preview",
+  "projects/407972401531/locations/global/publishers/google/models/gemini-live-2.5-flash",
+  "projects/407972401531/locations/us-central1/publishers/google/models/gemini-live-2.5-flash",
 ];
 
 for (const model of MODELS) {

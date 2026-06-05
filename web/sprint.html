@@ -96,6 +96,7 @@
         <button class="primary" onclick="sendChat()">Send</button>
       </div>
       <button class="voicebtn" id="voicebtn" onclick="toggleVoice()">🎤 Talk it through (voice)</button>
+      <button class="voicebtn" id="photobtn" onclick="sendWorkPhoto()" style="display:none">📷 Show Sage your scratch work</button>
     </div>
   </div>
   <footer>Sage · adaptive sprint synced from iMessage · Butterbase session <span id="sid">…</span></footer>
@@ -290,10 +291,8 @@ async function askSage(mode, userText = null, diagnosis = null) {
 }
 function sendChat() { const v = $("#chatin").value.trim(); if (!v) return; $("#chatin").value = ""; askSage("chat", v); }
 
-/* ---------- voice (wired by voice gate, task #8) ---------- */
-function toggleVoice() { sysmsg("Voice tutor arriving shortly — gate test in progress. Use chat meanwhile."); }
-
 boot().catch(e => { console.error(e); $("#quiz").innerHTML = `<p>Failed to load: ${esc(e.message)}</p>`; });
 </script>
+<script src="/voice.js"></script>
 </body>
 </html>
