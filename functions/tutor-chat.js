@@ -60,13 +60,28 @@ export default async function handler(req, ctx) {
   ];
   if (mode === "chat" && userText) messages.push({ role: "user", content: userText });
 
+  // Gateway-first, Vertex-failover: during the event the platform gateway's
+  // upstream (OpenRouter) ran out of credits — Sage stays up either way.
   const res = await fetch(`https://api.butterbase.ai/v1/${ctx.env.APP_ID}/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${ctx.env.GATEWAY_KEY}` },
     body: JSON.stringify({ messages, max_tokens: 500, temperature: 0.4, stream: false }),
   });
-  if (!res.ok) return new Response(JSON.stringify({ error: `gateway ${res.status}` }), { status: 502, headers: { "Content-Type": "application/json" } });
-  const data = await res.json();
-  const text = data.choices?.[0]?.message?.content ?? "";
-  return new Response(JSON.stringify({ text }), { headers: { "Content-Type": "application/json" } });
+  if (res.ok) {
+    const data = await res.json();
+    return new Response(JSON.stringify({ text: data.choices?.[0]?.message?.content ?? "" }), { headers: { "Content-Type": "application/json" } });
+  }
+  console.warn(`gateway ${res.status} — failing over to Vertex`);
+  if (!ctx.env.VERTEX_KEY) return new Response(JSON.stringify({ error: `gateway ${res.status}, no fallback` }), { status: 502, headers: { "Content-Type": "application/json" } });
+  const sys = messages.filter((m) => m.role === "system").map((m) => m.content).join("\n");
+  const contents = messages.filter((m) => m.role !== "system").map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] }));
+  const vres = await fetch(`https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent?key=${ctx.env.VERTEX_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents, systemInstruction: { parts: [{ text: sys }] }, generationConfig: { maxOutputTokens: 500, temperature: 0.4 } }),
+  });
+  if (!vres.ok) return new Response(JSON.stringify({ error: `gateway ${res.status} + vertex ${vres.status}` }), { status: 502, headers: { "Content-Type": "application/json" } });
+  const vdata = await vres.json();
+  const text = vdata.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") ?? "";
+  return new Response(JSON.stringify({ text, via: "vertex-failover" }), { headers: { "Content-Type": "application/json" } });
 }

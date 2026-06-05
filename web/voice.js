@@ -78,8 +78,13 @@ async function toggleVoice() {
 
   btn.textContent = "Connecting…";
   try {
-    const { key } = await (await fetch("/api/voice-config")).json();
-    if (!key) throw new Error("no voice key configured");
+    let key = null;
+    try { key = (await (await fetch("/api/voice-config")).json()).key; } catch {}
+    if (!key) {
+      sysmsg("🎤 Voice runs on the demo machine (the key never ships to the public site). Use the chat tutor here, or visit the demo station for the full voice experience.");
+      btn.textContent = "🎤 Voice (demo machine only)";
+      return;
+    }
     ws = new WebSocket(`wss://aiplatform.googleapis.com/ws/google.cloud.aiplatform.v1beta1.LlmBidiService/BidiGenerateContent?key=${key}`);
     ws.onmessage = async (ev) => {
       const data = JSON.parse(typeof ev.data === "string" ? ev.data : await ev.data.text());
