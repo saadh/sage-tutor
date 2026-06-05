@@ -202,6 +202,7 @@ function recordAnswer(q, label, secs) {
 function renderQuestion() {
   const q = current, n = S.history.length + 1;
   hintRung = 0; lastWrong = null; qStart = Date.now();
+  if (typeof voiceQuestionChanged === "function") voiceQuestionChanged(); // keep the voice tutor's context fresh
   $("#quiz").innerHTML = `
     <div class="session-top"><span class="qcount">Q ${n} / ${SETTINGS.SESSION_LEN}</span>
       <span class="progress"><i style="width:${((n - 1) / SETTINGS.SESSION_LEN) * 100}%"></i></span></div>

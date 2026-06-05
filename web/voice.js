@@ -94,6 +94,13 @@ async function toggleVoice() {
         ws.send(JSON.stringify({ clientContent: { turns: [{ role: "user", parts: [{ text: "I just opened the voice tutor. Briefly check in with me about this question." }] }], turnComplete: true } }));
         return;
       }
+      // tool call: the model asks for the question currently on screen
+      if (data.toolCall?.functionCalls?.length) {
+        ws.send(JSON.stringify({ toolResponse: { functionResponses: data.toolCall.functionCalls.map((fc) => ({
+          id: fc.id, name: fc.name, response: { screen: voiceContext() },
+        })) } }));
+        return;
+      }
       const sc = data.serverContent;
       if (sc?.interrupted) { flushPlayback(); return; }
       for (const p of sc?.modelTurn?.parts ?? []) {
@@ -105,8 +112,13 @@ async function toggleVoice() {
       setup: {
         model: VOICE_MODEL,
         generationConfig: { responseModalities: ["AUDIO"] },
+        tools: [{ functionDeclarations: [{
+          name: "get_current_question",
+          description: "Returns the question CURRENTLY on the student's screen: text, choices, whether they answered, and the verified rationale. Call this whenever the student moves to a new question, asks what's on screen, or before explaining anything — your initial context goes stale as they advance.",
+        }] }],
         systemInstruction: { parts: [{ text:
-          "You are Sage, a warm, encouraging GMAT/GRE quant voice tutor sitting next to the student. Speak in short, natural sentences — one idea at a time, then pause. Ground every explanation in the verified rationale below. Never reveal answers to unanswered questions; guide with questions first, Socratic style.\n\n" + voiceContext() }] },
+          "You are Sage, a warm, encouraging GMAT/GRE quant voice tutor sitting next to the student. Speak in short, natural sentences — one idea at a time, then pause. Ground every explanation in the verified rationale. Never reveal answers to unanswered questions; guide with questions first, Socratic style.\n" +
+          "IMPORTANT: the student advances through questions while you talk. Your context below is only the STARTING state — when they mention a new question or you receive a CONTEXT UPDATE, trust that. Call get_current_question whenever unsure what's on screen.\n\n" + voiceContext() }] },
       },
     }));
     ws.onclose = (ev) => { if (voiceOn) sysmsg(`Voice disconnected${ev.reason ? ": " + ev.reason.slice(0, 60) : ""}.`); stopVoiceInternals(); voiceOn = false; btn.textContent = "🎤 Talk it through (voice)"; btn.classList.remove("live"); };
@@ -115,6 +127,16 @@ async function toggleVoice() {
     sysmsg("Voice unavailable: " + e.message);
     btn.textContent = "🎤 Talk it through (voice)";
   }
+}
+
+/** Called by the quiz whenever the on-screen question changes — silently
+ *  refreshes the live session's context (turnComplete:false = no spoken reply). */
+function voiceQuestionChanged() {
+  if (!ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ clientContent: {
+    turns: [{ role: "user", parts: [{ text: "CONTEXT UPDATE — the screen changed. Do not respond to this message. New state:\n" + voiceContext() }] }],
+    turnComplete: false,
+  } }));
 }
 
 /** "Show me your work" — send a camera frame of handwritten scratch work. */
