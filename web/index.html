@@ -50,11 +50,11 @@
   </div>
   <div class="signup" id="signup">
     <h2>Start practicing in 30 seconds</h2>
-    <p class="s">Sage will text you — reply GO and your first calibration sprint begins.</p>
+    <p class="s">Your sprint starts right here in the browser — and Sage will also text you so the iMessage tutor is one reply away.</p>
     <input id="name" placeholder="Your name">
     <input id="phone" placeholder="Phone number (e.g. +15551234567)" inputmode="tel">
     <input id="exam" type="date" title="Exam date (optional)">
-    <button class="primary" id="btn" onclick="signup()">Text me my first sprint →</button>
+    <button class="primary" id="btn" onclick="signup()">Start my first sprint →</button>
     <p class="note" style="text-align:center;margin-top:10px">or <a href="/sprint.html" style="color:var(--accent);font-weight:600">practice on the web right now →</a> (no phone needed)</p>
     <p class="note">Your phone number is your account — verified by your reply, no password ever.
     By signing up you agree to receive practice texts from Sage.</p>
@@ -67,32 +67,34 @@ async function signup() {
   const exam = document.getElementById("exam").value || null;
   if (!phone.match(/^\+?[0-9 \-()]{8,}$/)) { alert("Enter a valid phone number incl. country code"); return; }
   const btn = document.getElementById("btn");
-  btn.disabled = true; btn.textContent = "Sending…";
+  btn.disabled = true; btn.textContent = "Starting your sprint…";
   const norm = phone.replace(/[^0-9+]/g, "");
-  const success = () => document.getElementById("signup").innerHTML =
-    `<div class="ok"><b>📲 Check your messages!</b><br>Sage will text ${norm} shortly. Reply <b>GO</b> to verify your number and start your first sprint.</div>`;
+  const API = "https://api.butterbase.ai/v1/app_7m70nwelqpk6";
+
+  // 1) fire the iMessage hello in the background — a bonus, never a gate
+  fetch("/api/signup", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, phone: norm, exam_date: exam }) }).catch(() => {});
+
   try {
-    // local bot API (demo machine) — texts immediately
-    const r = await fetch("/api/signup", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, phone: norm, exam_date: exam }) });
-    const data = await r.json();
-    if (data.ok) return success();
-    throw new Error(data.error || "signup failed");
-  } catch (e) {
-    // deployed (static) host: write the signup straight to Butterbase —
-    // the Sage bot watches for new students and sends the verification text.
-    try {
-      const r2 = await fetch("https://api.butterbase.ai/v1/app_7m70nwelqpk6/users", {
-        method: "POST", headers: { "Content-Type": "application/json" },
+    // 2) ensure the account exists (phone = identity)
+    let user = (await (await fetch(`${API}/users?phone=eq.${encodeURIComponent(norm)}&limit=1`)).json())[0];
+    if (!user) {
+      const r = await fetch(`${API}/users`, { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: norm, name: name || null, exam_date: exam }) });
-      if (r2.ok || r2.status === 409) return success(); // 409/unique = already signed up
-      const errBody = await r2.text();
-      if (errBody.includes("UNIQUE")) return success();
-      throw new Error("signup storage failed");
-    } catch (e2) {
-      btn.disabled = false; btn.textContent = "Text me my first sprint →";
-      alert("Could not reach Sage: " + e2.message);
+      if (r.ok) user = await r.json();
+      else user = (await (await fetch(`${API}/users?phone=eq.${encodeURIComponent(norm)}&limit=1`)).json())[0];
     }
+    if (!user?.id) throw new Error("account creation failed");
+
+    // 3) open a sprint session and go — the web IS the product entrance
+    const tok = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join("");
+    const sess = await (await fetch(`${API}/sessions`, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: user.id, mode: "sprint", state: "in_question", web_token: tok }) })).json();
+    if (!sess?.id) throw new Error("could not open a session");
+    location.href = `/sprint.html?token=${tok}`;
+  } catch (e) {
+    btn.disabled = false; btn.textContent = "Start my first sprint →";
+    alert("Could not start: " + e.message);
   }
 }
 </script>
