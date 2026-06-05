@@ -13,7 +13,7 @@ import { terminal } from "spectrum-ts/providers/terminal";
 import { imessage } from "spectrum-ts/providers/imessage";
 import crypto from "node:crypto";
 
-import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, loadMastery, saveMastery } from "./lib/db.ts";
+import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery } from "./lib/db.ts";
 import { newSprintState, pickQuestion, recordAnswer, entryDifficulty, summarize, type Question, type SprintState, type MasteryRow } from "./lib/engine.ts";
 import { recallStudentContext, recordStruggle, recordSprintEpisode } from "./lib/memory.ts";
 import { initTutorPipeline, tutorRespond } from "./lib/tutor.ts";
@@ -35,6 +35,9 @@ interface Live {
   hintRung: number; // 0..3 for current question
   lastWrong: { q: Question; answer: string } | null;
   webToken: string | null;
+  pendingMicroTopic?: string | null; // set when a nudge was sent, awaiting "go"
+  microTopic?: string | null; // active micro-session topic filter
+  microLen?: number;
 }
 const live = new Map<string, Live>(); // key = sender id (phone)
 
@@ -60,9 +63,26 @@ async function ensureLive(senderId: string, name?: string): Promise<Live> {
 }
 
 // ---------- sprint flow ----------
+/** XTrace recall with a hard time budget — the greeting must never block the quiz. */
+async function recallFast(xtraceId: string, budgetMs = 2500): Promise<string | null> {
+  return Promise.race([
+    recallStudentContext(xtraceId),
+    new Promise<null>((r) => setTimeout(() => r(null), budgetMs)),
+  ]).catch(() => null);
+}
+
+/** One-line memory greeting from recalled facts. Template, zero LLM latency. */
+function memoryLine(ctx: string | null): string | null {
+  if (!ctx) return null;
+  const struggle = ctx.match(/struggles? with ([a-z\- ]+?)[\.\;]/i)?.[1]?.trim();
+  if (struggle) return `Welcome back — last time ${struggle.replace(/-/g, " ")} gave you trouble. Let's warm up there. 🎯`;
+  const strength = ctx.match(/strong at ([a-z\- ]+?)[\.\;]/i)?.[1]?.trim();
+  if (strength) return `Welcome back — ${strength.replace(/-/g, " ")} is a strength now. Let's push further. 🎯`;
+  return `Welcome back — picking up where we left off. 🎯`;
+}
+
 async function startSprint(L: Live, send: (t: string) => Promise<void>) {
   const settings = await loadSettings();
-  const questions = await loadServableQuestions();
   L.mastery = await loadMastery(L.userId);
   L.state = newSprintState(entryDifficulty(L.mastery, settings));
   L.webToken = crypto.randomBytes(12).toString("hex");
@@ -71,25 +91,36 @@ async function startSprint(L: Live, send: (t: string) => Promise<void>) {
   L.phase = "in_question";
   L.hintRung = 0;
   L.lastWrong = null;
+  L.microTopic = null;
+  L.pendingMicroTopic = null;
 
-  // XTrace-grounded greeting (RocketRide pipeline, template fallback)
-  const ctx = await recallStudentContext(L.xtraceId);
-  const greeting =
-    (await tutorRespond({ intent: "greeting", studentContext: ctx })) ??
-    (ctx ? `Welcome back. I remember where we left off — let's pick it up from there. 🎯` : `Hi, I'm Sage 🎯 Ten adaptive questions, at your pace. Difficulty follows how you do. Let's go.`);
-  await send(greeting);
-
-  await sendNextQuestion(L, send, settings.sessionLen);
+  // memory line (hard 2.5s budget) + Q1 — ONE message, quiz starts immediately
+  const ctx = await recallFast(L.xtraceId);
+  const greet = memoryLine(ctx) ?? `Hi, I'm Sage 🎯 Ten adaptive questions, at your pace.`;
+  const card = await nextQuestionCard(L, settings.sessionLen);
+  if (!card) return endSprint(L, send);
+  await send(`${greet}\n\n${card}`);
 }
 
-async function sendNextQuestion(L: Live, send: (t: string) => Promise<void>, sessionLen: number) {
-  const questions = await loadServableQuestions();
-  const q = L.state!.history.length >= sessionLen ? null : pickQuestion(L.state!, questions, L.mastery);
-  if (!q) return endSprint(L, send);
+/** Effective sprint length: micro-sessions are shorter. */
+function lenFor(L: Live, sessionLen: number): number {
+  return L.microTopic ? (L.microLen ?? 3) : sessionLen;
+}
+
+/** Picks the next question, updates Live state, returns the card text (null = sprint over). */
+async function nextQuestionCard(L: Live, sessionLen: number): Promise<string | null> {
+  let questions = await loadServableQuestions();
+  if (L.microTopic) {
+    const filtered = questions.filter((q) => q.topic === L.microTopic);
+    if (filtered.length) questions = filtered; // fall back to full pool if topic exhausted
+  }
+  const len = lenFor(L, sessionLen);
+  const q = L.state!.history.length >= len ? null : pickQuestion(L.state!, questions, L.mastery);
+  if (!q) return null;
   L.current = q;
   L.qSentAt = Date.now();
   L.hintRung = 0;
-  await send(questionCard(q, L.state!.history.length + 1, sessionLen));
+  return questionCard(q, L.state!.history.length + 1, len);
 }
 
 async function handleAnswer(L: Live, label: string, send: (t: string) => Promise<void>) {
@@ -114,33 +145,38 @@ async function handleAnswer(L: Live, label: string, send: (t: string) => Promise
     let msg = `✓ Correct${secs ? ` — in ${secs}s` : ""}.${secs && secs <= 90 ? " Solid pace for test day." : ""}`;
     if (L.hintRung > 0) msg += ` (with ${L.hintRung} hint${L.hintRung > 1 ? "s" : ""} — counts toward mastery, not the staircase)`;
     if (result.adaptNote) msg += `\n⚖️ ${result.adaptNote}`;
-    await send(msg);
     L.lastWrong = null;
-  } else {
-    const diagnosis = q.distractor_diagnoses?.[label];
-    L.lastWrong = { q, answer: label };
-    // RocketRide P2 pipeline: verdict grounded in rationale + diagnosis
-    const verdict =
-      (await tutorRespond({
-        intent: "verdict", questionText: q.question,
-        choices: q.choices.map((c) => `${c.label}) ${c.text}`).join(" "),
-        studentAnswer: label, correctAnswer: q.correct, rationale: q.rationale ?? "", diagnosis,
-      })) ?? `✗ Not quite — the answer is ${q.correct}.${diagnosis ? ` ${diagnosis}` : ""} Want me to walk through it? (reply "walk")`;
-    await send(verdict.includes("walk") ? verdict : verdict + `\n\nWant the full walkthrough? Reply "walk".`);
-    if (result.floorRuleFired) {
-      recordStruggle(L.xtraceId, q.topic, `Two misses at difficulty 1 indicate a concept gap, not a difficulty problem.`);
-      await send(`📚 Flagged ${topicName(q.topic)} for instruction — I'll bring a gentler on-ramp next time.`);
+    // verdict + next question in ONE message (latency: every send costs delivery time)
+    const card = await nextQuestionCard(L, settings.sessionLen);
+    if (!card) {
+      await send(msg);
+      return endSprint(L, send);
     }
-    if (result.adaptNote && !result.floorRuleFired) await send(`⚖️ ${result.adaptNote}`);
-    L.phase = "awaiting_walkthrough";
-    return; // wait for walk / next / answer
+    await send(`${msg}\n\n${card}`);
+    return;
   }
-  await sendNextQuestion(L, send, settings.sessionLen);
+
+  // wrong: pre-generated diagnosis = instant verdict, zero LLM in the hot path.
+  // The RocketRide pipeline runs only on explicit "walk" (depth worth waiting for).
+  const diagnosis = q.distractor_diagnoses?.[label];
+  L.lastWrong = { q, answer: label };
+  const parts = [
+    `✗ Not quite — the answer is ${q.correct}.${diagnosis ? `\n🔍 ${diagnosis}` : ""}`,
+  ];
+  if (result.floorRuleFired) {
+    recordStruggle(L.xtraceId, q.topic, `Two misses at difficulty 1 indicate a concept gap, not a difficulty problem.`);
+    parts.push(`📚 Flagged ${topicName(q.topic)} for instruction — I'll bring a gentler on-ramp next time.`);
+  } else if (result.adaptNote) {
+    parts.push(`⚖️ ${result.adaptNote}`);
+  }
+  parts.push(`Reply "walk" for the full walkthrough, or "next" to keep going.`);
+  await send(parts.join("\n"));
+  L.phase = "awaiting_walkthrough";
 }
 
 async function endSprint(L: Live, send: (t: string) => Promise<void>) {
   const summary = summarize(L.state!);
-  await updateSession(L.sessionId!, { state: "done", ended_at: new Date().toISOString(), score: summary.nCorrect } as any).catch(() => {});
+  await updateSession(L.sessionId!, { state: "done", ended_at: new Date().toISOString(), score: summary.nCorrect, sprint_state: JSON.stringify(L.state) } as any).catch(() => {});
   await recordSprintEpisode(L.xtraceId, L.sessionId!, summary, "sprint");
   const lines = [
     `🏁 Sprint complete: ${summary.nCorrect}/${summary.total}${summary.avgSecs ? ` · avg ${summary.avgSecs}s/q` : ""} · peak difficulty ${summary.peakDifficulty}/5`,
@@ -150,9 +186,53 @@ async function endSprint(L: Live, send: (t: string) => Promise<void>) {
     `Text "start" anytime for another sprint.`,
   ].filter(Boolean);
   await send(lines.join("\n"));
+  scheduleNudge(L, summary, send);
   L.phase = "idle";
   L.current = null;
   L.state = null;
+  L.microTopic = null;
+}
+
+/** Post-session follow-up nudge — the "it texted me first" beat.
+ *  DEMO_MODE compresses the delay so it fires on stage mid-pitch.
+ *  Replying starts a short micro-session on the weakest topic. */
+function scheduleNudge(L: Live, summary: ReturnType<typeof summarize>, send: (t: string) => Promise<void>) {
+  const gap = summary.gaps[0];
+  if (!gap) return;
+  loadSettings().then((settings) => {
+    const delayMs = settings.nudgeDelayS * 1000;
+    console.log(`nudge scheduled: ${gap} in ${settings.nudgeDelayS}s`);
+    setTimeout(async () => {
+      if (L.phase !== "idle") return; // don't interrupt an active sprint
+      const body = `👋 Quick thought — ${topicName(gap)} tripped you up earlier. Three questions to lock it in? Reply "go" and I'll keep it short.`;
+      try {
+        await send(body);
+        await insertNudge({ user_id: L.userId, trigger_type: "post_session_gap", body, sent_at: new Date().toISOString() });
+        L.pendingMicroTopic = gap;
+        console.log(`nudge sent: ${gap}`);
+      } catch (e) {
+        console.error("nudge send failed:", e);
+      }
+    }, delayMs);
+  }).catch(() => {});
+}
+
+/** 3-question micro-session focused on one topic (nudge reply flow). */
+async function startMicroSession(L: Live, topic: string, send: (t: string) => Promise<void>) {
+  const settings = await loadSettings();
+  L.mastery = await loadMastery(L.userId);
+  const entry = Math.max(1, Math.min(5, Math.round(L.mastery.get(topic)?.level ?? settings.defaultEntryLevel)));
+  L.state = newSprintState(entry);
+  L.webToken = crypto.randomBytes(12).toString("hex");
+  const session = await createSession(L.userId, "micro", L.webToken);
+  L.sessionId = session.id;
+  L.phase = "in_question";
+  L.pendingMicroTopic = null;
+  L.microTopic = topic;
+  L.microLen = settings.microSessionLen;
+  const card = await nextQuestionCard(L, settings.microSessionLen);
+  if (!card) return endSprint(L, send);
+  await send(`Let's lock in ${topicName(topic)} — ${settings.microSessionLen} quick ones. 💪\n\n${card}`);
 }
 
 // ---------- message routing ----------
@@ -160,6 +240,10 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
   const t = text.trim().toLowerCase();
   const settings = await loadSettings();
 
+  // nudge reply → micro-session on the flagged topic
+  if (L.phase === "idle" && L.pendingMicroTopic && ["go", "yes", "y", "sure", "ok", "let's go", "lets go"].includes(t)) {
+    return startMicroSession(L, L.pendingMicroTopic, send);
+  }
   if (["start", "go", "begin", "practice", "hi", "hello", "hey"].includes(t)) return startSprint(L, send);
   if (t === "stop") {
     if (L.sessionId) await updateSession(L.sessionId, { state: "done", ended_at: new Date().toISOString() } as any).catch(() => {});
@@ -191,19 +275,14 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
       const right = L.state!.history.filter((h) => h.correct).length;
       return send(`${done}/${settings.sessionLen} answered, ${right} correct, difficulty ${L.state!.difficulty}/5.`);
     }
-    // free-text during a question → grounded nudge, never the answer
-    const reply = await tutorRespond({
-      intent: "freeform", freeText: text,
-      questionText: L.current.question,
-      choices: L.current.choices.map((c) => `${c.label}) ${c.text}`).join(" "),
-      rationale: L.current.rationale ?? "",
-    });
-    return send(reply ?? `Reply A–E when ready, or "hint" if you want a nudge.`);
+    // free-text during a question → instant canned nudge (NO agent call in the hot path)
+    return send(`I'm with you — answer A–E when ready, "hint" for a nudge, or "help" to open the tutor room.`);
   }
 
   if (L.phase === "awaiting_walkthrough" && L.lastWrong) {
     const { q, answer } = L.lastWrong;
     if (["walk", "yes", "y", "sure", "ok", "walk me through it", "yes please"].includes(t)) {
+      await send(`On it — give me a few seconds 🧮`); // pipeline call is the one deliberate slow path
       const wt = await tutorRespond({
         intent: "walkthrough", questionText: q.question,
         choices: q.choices.map((c) => `${c.label}) ${c.text}`).join(" "),
@@ -215,7 +294,9 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
     if (["next", "n", "continue", "skip"].includes(t)) {
       L.phase = "in_question";
       L.lastWrong = null;
-      return sendNextQuestion(L, send, settings.sessionLen);
+      const card = await nextQuestionCard(L, settings.sessionLen);
+      if (!card) return endSprint(L, send);
+      return send(card);
     }
     // free-text follow-up inside walkthrough
     const reply = await tutorRespond({
@@ -272,13 +353,29 @@ for await (const [space, message] of app.messages) {
   const text = message.content.text;
   const senderId = message.sender?.id ?? "terminal-user";
   console.log(`[${message.platform}] ${senderId}: ${text}`);
+  const t0 = Date.now();
   try {
     const L = await ensureLive(senderId);
     await handleMessage(L, text, async (t: string) => {
-      await space.send(t);
+      console.log(`[send +${Date.now() - t0}ms] ${t.slice(0, 70).replace(/\n/g, " ")}…`);
+      // Photon's shared pool intermittently throws DEADLINE_EXCEEDED — retry
+      // with backoff so blips become delays, not dropped questions.
+      let lastErr: unknown;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          await space.send(t);
+          console.log(`[sent +${Date.now() - t0}ms attempt ${attempt}]`);
+          return;
+        } catch (e) {
+          lastErr = e;
+          console.error(`[send FAIL attempt ${attempt}] ${(e as any)?.cause?.details ?? (e as any)?.message ?? e}`);
+          if (attempt < 3) await new Promise((r) => setTimeout(r, 1500 * attempt));
+        }
+      }
+      throw lastErr;
     });
   } catch (e) {
     console.error("handler error:", e);
-    await space.send("Hit a snag — give me a sec and try again.").catch(() => {});
+    await space.send("Hit a snag — text me again in a few seconds.").catch(() => {});
   }
 }

@@ -21,11 +21,14 @@ async function api<T = any>(method: string, path: string, body?: unknown): Promi
   return text ? JSON.parse(text) : (undefined as T);
 }
 
-// ---------- settings (config-not-constants) ----------
-export async function loadSettings(): Promise<EngineSettings & { nudgeDelayS: number; demoMode: boolean; model: string; microSessionLen: number }> {
+// ---------- settings (config-not-constants, 60s TTL cache) ----------
+type Settings = EngineSettings & { nudgeDelayS: number; demoMode: boolean; model: string; microSessionLen: number };
+let settingsCache: { at: number; value: Settings } | null = null;
+export async function loadSettings(): Promise<Settings> {
+  if (settingsCache && Date.now() - settingsCache.at < 60_000) return settingsCache.value;
   const rows = await api<{ name: string; value: string }[]>("GET", "/settings?select=name,value&limit=100");
   const g = (n: string, d: string) => rows.find((r) => r.name === n)?.value ?? d;
-  return {
+  const value: Settings = {
     sessionLen: +g("SESSION_LEN", "10"),
     microSessionLen: +g("MICRO_SESSION_LEN", "3"),
     staircaseUp: +g("STAIRCASE_UP", "2"),
@@ -37,6 +40,8 @@ export async function loadSettings(): Promise<EngineSettings & { nudgeDelayS: nu
     demoMode: g("DEMO_MODE", "false") === "true",
     model: g("MODEL", "anthropic/claude-haiku-4.5"),
   };
+  settingsCache = { at: Date.now(), value };
+  return value;
 }
 
 // ---------- questions ----------
