@@ -1,0 +1,834 @@
+[
+ {
+  "question": "A banana costs Rs.3 and an apple costs Rs.4. What will be the total cost of 4 dozen of apples and bananas?",
+  "options": [
+   "A)Rs. 216",
+   "B)Rs.108",
+   "C)Rs.225",
+   "D)Rs.189",
+   "E)Rs.336"
+  ],
+  "rationale": "Total cost of 4 dozens of apples & bananas = 4 x 12 x (4 + 3) = Rs.336\nANSWER: E",
+  "correct": "E",
+  "id": "aqua_dev_0130"
+ },
+ {
+  "question": "It takes 4 men 6 hours to repair a road. How long will it take 8 men to do the job if they work at the same rate?",
+  "options": [
+   "A)2",
+   "B)3",
+   "C)4",
+   "D)5",
+   "E)3.5"
+  ],
+  "rationale": "Let t be the time taken for the 8 men to finish the job.\n4* 6 = 8* t\n24 = 8t\nt = 3 hours\nAnswer:B",
+  "correct": "B",
+  "id": "aqua_dev_0131"
+ },
+ {
+  "question": "Company X has 40 employees and company Y has 50 employees. Both companies have the same number of full time employees, but company Y has 4 more than twice the number of part-time employees that Company X has. How many part-time employees does Company Y have?",
+  "options": [
+   "A)16",
+   "B)14",
+   "C)12",
+   "D)10",
+   "E)8"
+  ],
+  "rationale": "Let P be the number of part-time employees at Company X.\nIf Company Y has 10 more employees, then 2P+4 = P+10\nThen P = 6 and the number of part-time employees at Company Y is 2(6)+4 = 16.\nThe answer is A.",
+  "correct": "A",
+  "id": "aqua_dev_0132"
+ },
+ {
+  "question": "If 2s > 8 and 4t < 12, which of the following could be the value of s-t?\nI. -1\nII. 0\nIII. 1",
+  "options": [
+   "A)None",
+   "B)I only",
+   "C)II only",
+   "D)III only",
+   "E)II and III"
+  ],
+  "rationale": "2s > 8, then s > 4\n4t < 12, then t < 3 and -t > -3\nIf we add the two inequalities: s-t > 1\nThe answer is A.",
+  "correct": "A",
+  "id": "aqua_dev_0133"
+ },
+ {
+  "question": "After measuring 200 meters of a rope. It was discovered that the measuring meter rod was three centimeters longer. The true length of the rope measured is",
+  "options": [
+   "A)208m",
+   "B)123m 60cm",
+   "C)120m 3cm",
+   "D)123m",
+   "E)125m"
+  ],
+  "rationale": "Required length = 200m + (200 x 3) cm = 200m + 600cm\n= 208m\nAnswer A.",
+  "correct": "A",
+  "id": "aqua_dev_0134"
+ },
+ {
+  "question": "ASB is a quarter circle. PQRS is a rectangle with sides PQ = 8 and PS = 6. What is the length of the arc AQB ?",
+  "options": [
+   "A)5\u03c0",
+   "B)10\u03c0",
+   "C)25",
+   "D)14",
+   "E)28"
+  ],
+  "rationale": "Radius will be 10 cm\nLength of Arc AQB = 1/4\u22172\u03c0\u221710 = 5\u03c0\nHence answer will be A. 5\u03c0",
+  "correct": "A",
+  "id": "aqua_dev_0135"
+ },
+ {
+  "question": "In a village, there are four tribes located at different distances from each other. Tribe R is 60 miles away from Tribe P; Tribe S 40 miles away from Tribe B and Tribe R is 10 miles nearer to the Tribe S than it is to Tribe Q.\nHow far is the Tribe S located from the tribe P ?",
+  "options": [
+   "A)20",
+   "B)22",
+   "C)34",
+   "D)25",
+   "E)55"
+  ],
+  "rationale": "Distance between Tribe Q and Tribe S = 40km\n=> Distance between Tribe Q and Tribe R + Distance between Tribe R and Tribe S = 40km\n=> Distance between Tribe Q and Tribe R + (Distance between Tribe Q and Tribe R - 10) = 40 km\n=> 2 * Distance between Tribe Q and Tribe R = 50km\n=> Distance between Tribe Q and Tribe R = 25km",
+  "correct": "D",
+  "id": "aqua_dev_0136"
+ },
+ {
+  "question": "A 2 metre broad pathway is to be constructed around a rectangular plot on the inside. The area of the plots is 96 sq.m. The rate of construction is Rs. 50 per square metre. Find the total cost of the construction?",
+  "options": [
+   "A)28",
+   "B)20",
+   "C)99",
+   "D)88",
+   "E)11"
+  ],
+  "rationale": "Let the cost price = Rs 100\nthen, Marked price = Rs 135\nRequired gain = 8%,\nSo Selling price = Rs 108\nDiscount = 135 - 108 = 27\nDiscount% = (27/135)*100 = 20%\nAnswer: B) 20%",
+  "correct": "B",
+  "id": "aqua_dev_0137"
+ },
+ {
+  "question": "John needs to mix a cleaning solution in the following ratio: 1 part bleach for every 4 parts water. When mixing the solution, John makes a mistake and mixes in half as much bleach as he ought to have. The total solution consists of 36 ml. How many ml of bleach did John put into the solution?",
+  "options": [
+   "A)9",
+   "B)6",
+   "C)5",
+   "D)4",
+   "E)3"
+  ],
+  "rationale": "The ratio that John used by mistake was 1:8.\nThus, 1/9 of the solution is bleach.\n(1/9)*36 = 4 ml\nThe answer is D.",
+  "correct": "D",
+  "id": "aqua_dev_0138"
+ },
+ {
+  "question": "Of the new vehicles registered in a week, 300 were neither SUVs nor were they powered by diesel. 3/4th of the SUVs registered were diesel powered and there were half as many SUVs as there were non SUVs. If SUVs not powered by diesel were a sixth of non SUVs not powered by diesel, how many vehicles V registered in the week were powered by diesel?",
+  "options": [
+   "A)50",
+   "B)150",
+   "C)200",
+   "D)250",
+   "E)400"
+  ],
+  "rationale": "Supposing that 'x' is the number of vehicles of SUV.\n0.25*x = non diesel SUV\n0.75*x = diesel SUV\n0.5*x = only diesel\nBy supposition,\n0.25*x = 1/6*300\n=>x = 200\nTherefore, number of vehicles powered by diesel is V =150+100 = 250=D",
+  "correct": "D",
+  "id": "aqua_dev_0139"
+ },
+ {
+  "question": "Bill owns a large collection of fishing lures consisting of small, medium, and large lures that weigh 3, 4, and 5 grams each, respectively. If the product of the lure weights that Bill sold to his friend is 216,000 grams, how many medium lures did he sell?",
+  "options": [
+   "A)6",
+   "B)5",
+   "C)4",
+   "D)3",
+   "E)2"
+  ],
+  "rationale": "first step:\n216,000 = 216 * 1000\n1000 = 10^3 or 5^3 * 2^3.\n216 = 2 * 108 = 2*2* 54\n54 = 2*27 = 2*3^3.\ntotal, we have:\n2^3(from 1000) * 5^3(from 1000) * 2^3(from 216) * 3^3(from 2016)\ncombine:\n2^6 * 5^3 * 3^3\nwe can rewrite 2^6 as 4^3.\nsince we are asked for the exponent for 4,\nANSWER:C",
+  "correct": "C",
+  "id": "aqua_dev_0140"
+ },
+ {
+  "question": "A wire is cut into three equal parts. The resulting segments are then cut into 6, 8, and 10 equal parts, respectively. If each of the resulting segments has an integer length, what is the minimum length of the wire?",
+  "options": [
+   "A)240",
+   "B)360",
+   "C)480",
+   "D)540",
+   "E)720"
+  ],
+  "rationale": "LCM of 6,8 and 10 = 2^3 * 3 * 5 = 120\nSince each of three equal parts will be of length 120 each.\nMinimum length of original wire = 120*3= 360\nAnswer B",
+  "correct": "B",
+  "id": "aqua_dev_0141"
+ },
+ {
+  "question": "An engineering student has to secure 36% marks to pass. He gets 130 marks and fails by 14 marks. The maximum number of marks obtained by him is?",
+  "options": [
+   "A)881",
+   "B)400",
+   "C)778",
+   "D)566",
+   "E)281"
+  ],
+  "rationale": "130\n14\n-------\n361------ 144\n100%------? => 400\nAnswer: B",
+  "correct": "B",
+  "id": "aqua_dev_0142"
+ },
+ {
+  "question": "A soda can, in the shape of a circular cylinder, is 3/4 full of soda. If the volume of soda in the can is 72\u03c0 cubic inches and the diameter of the can is 8 inches, then what is the height, in inches, of the can?",
+  "options": [
+   "A)1.5",
+   "B)3",
+   "C)4",
+   "D)4.5",
+   "E)6"
+  ],
+  "rationale": "Since the volume of soda in the can is 72\u03c0 and the can is 3/4 full of soda then the volume of the can is 3/4\u2217can=72\u03c0 --> can=96\u03c0\nThe volume of a cylinder is \u03c0^r2h --> \u03c04^2h=96\u03c0\u03c0 --> h=6\nAnswer: E.",
+  "correct": "E",
+  "id": "aqua_dev_0143"
+ },
+ {
+  "question": "In a city, 20% of the population travels by car, 50% travels by bus and 10% travels by both car and bus. Then, the percentage of the population that travels by either car or bus is...",
+  "options": [
+   "A)40%",
+   "B)50%",
+   "C)60%",
+   "D)70%",
+   "E)80%"
+  ],
+  "rationale": "According to the problem,\np(car)=20%=1/5\np(bus)=50%=1/2\np(car \u2229 bus)=10%=1/10\nSince p(car u bus)=p(car)+p(bus)-p(car n bus)\np(car \u222a bus)=1/5 + 1/2 - 1/10=3/5=60%\nANSWER:C",
+  "correct": "C",
+  "id": "aqua_dev_0144"
+ },
+ {
+  "question": "Terry has some oranges. Out of that, 4% were thrown away, 80% of the remaining oranges were sold and he is now left with 48 oranges. What was the initial number of oranges with him?",
+  "options": [
+   "A)100",
+   "B)200",
+   "C)300",
+   "D)350",
+   "E)250"
+  ],
+  "rationale": "Assume total oranges = 100x\nOranges remaining after throwing away = 96x\n80%sold of these sold.\nHence remaining oranges = 0.2*96x\nGiven, 0.2*96 x = 48\nHence 0.2x = 0.5\nx = 2.5\nTotal oranges = 250;\nANSWER:E",
+  "correct": "E",
+  "id": "aqua_dev_0145"
+ },
+ {
+  "question": "Three quarts of a bleaching chemical, Minum, contains 5 percent hydrogen peroxide and water. A different type of bleaching chemical, Maxim, which contains 20 percent hydrogen peroxide, will be mixed with the three quarts of Minum. How much of type Maxim should be added to the three quarts of Minum so that the resulting mixture contains 10 percent hydrogen peroxide?",
+  "options": [
+   "A)2 quarts",
+   "B)3.75 quarts",
+   "C)4.5 quarts",
+   "D)6 quarts",
+   "E)9 quarts"
+  ],
+  "rationale": "5% HydPerWater (HPW) of 3 quart of Minum= .10 q\n20% of HPW of x q of Maxim = .2x\nTotal = .10 + .2x = .10 (3+x)\nSolving , x=2 quart\nA",
+  "correct": "A",
+  "id": "aqua_dev_0146"
+ },
+ {
+  "question": "The total weight of a tin and the cookies it contains is 2 pounds. After 3/4 of the cookies are eaten, the tin and the remaining cookies weigh 0.8 pounds. What is the weight of the empty tin in pounds?",
+  "options": [
+   "A)0.9",
+   "B)0.6",
+   "C)0.4",
+   "D)0.3",
+   "E)0.1"
+  ],
+  "rationale": "Let the weight of the empty tin = w\n(2 - w) = weight of the cookies; and one quarter of the cookies weigh (2 - w)/4\nOne quarter of the cookies + tin = 0.8 = w + (2 - w)/4\nMultiply through by 4; 3.2 = 4w + 2 - w\n1.2 = 3w; w = 0.4\nAnswer: C) 0.4",
+  "correct": "C",
+  "id": "aqua_dev_0147"
+ },
+ {
+  "question": "In how many ways to choose a group of 3 people from 6 couples so that no couple is chosen",
+  "options": [
+   "A)60",
+   "B)120",
+   "C)140",
+   "D)160",
+   "E)180"
+  ],
+  "rationale": "Number of ways 3 people can be chosen from 12 = 12C3 = 220\nNumber of ways a couple can be chosen = 6\nNumber of ways the third person can be chosen = 10C1 = 10\nHence, total number of ways a couple with another person can be chosen = 6*10 = 60\nTherefore, total number of ways a couple cannot be chosen = 220-60 = 160\nANSWER:D",
+  "correct": "D",
+  "id": "aqua_dev_0148"
+ },
+ {
+  "question": "There are 6 multiple choice questions in an examination. How many sequences of answers are possible, if the first three questions have 4 choices each and the next three have 5 each?",
+  "options": [
+   "A)5000",
+   "B)6000",
+   "C)7000",
+   "D)8000",
+   "E)9000"
+  ],
+  "rationale": "Here we have to perform 6 jobs of answering 6 multiple choice questions. Each of the first three questions can be answered in 4 ways and each one of the next three can be answered in 5 different ways. So, the total number of different sequences = 4 \u00d7 4 \u00d7 4 \u00d7 5 \u00d7 5 \u00d7 5 = 8000\nANSWER D 8000",
+  "correct": "D",
+  "id": "aqua_dev_0149"
+ },
+ {
+  "question": "Eesha has a wheat business. She purchases wheat from a local wholesaler of a particular cost per pound. The price of the wheat of her stores is $3 per kg. Her faulty spring balance reads 0.9 kg for a KG. Also in the festival season, she gives a 10% discount on the wheat. She found that she made neither a profit nor a loss in the festival season. At what price did Eesha purchase the wheat from the wholesaler ?",
+  "options": [
+   "A)$2.43",
+   "B)$2.49",
+   "C)$2.41",
+   "D)$2.45",
+   "E)$2.46"
+  ],
+  "rationale": "Explanation: Faulty spring balance reads 0.9 kg for a kg\" means that she sells 1 kg for the price of 0.9 kgs, so she looses 10% of the price because of the faulty spring balance. She looses another 10% because of the discount.\nSo, she actually sells 1 kg for $3\u00d70.9\u00d70.9=$2.43$3\u00d70.9\u00d70.9=$2.43 and since at that price she made neither a profit nor a loss, then Eesha purchase the wheat from the wholesaler for $2.43.\nAnswer:A",
+  "correct": "A",
+  "id": "aqua_dev_0150"
+ },
+ {
+  "question": "A train does a journey without stopping for 8 hours. If it had traveled 5 km an hour faster, it would have done the journey in 6 hours 40 min. What is its slower speed?",
+  "options": [
+   "A)35 kmph",
+   "B)25 kmph",
+   "C)40 kmph",
+   "D)50 kmph",
+   "E)None of these"
+  ],
+  "rationale": "Let its slower speed = V km per hour\nHere, the distance is same in both the cases\nUsing the formula = V1 x t1 = V2 x t2\nor, V x 8 = (V + 5) x 20/3\nor, 24V = (V + 5) x 20\nV= 25 km/h\nThus, The slower speed of train is 25 km/h.\nANSWER:B",
+  "correct": "B",
+  "id": "aqua_dev_0151"
+ },
+ {
+  "question": "The spherical ball of lead 3 cm in diameter is melted and recast into 3 spherical balls. The diameters of two of these are 1 1/2 cm and 2 cm respectively. The diameter of third ball is?",
+  "options": [
+   "A)2.6",
+   "B)2.5",
+   "C)2.9",
+   "D)3.5",
+   "E)7.5"
+  ],
+  "rationale": "4/3 \u03c0 * 3 * 3 * 3 = 4/3 \u03c0[(3/2)3 + 23 + r3]\nr = 1.25\nd = 2.5\nAnswer: B",
+  "correct": "B",
+  "id": "aqua_dev_0152"
+ },
+ {
+  "question": "A rope can make 70 rounds of the circumference of a cylinder whose radius of the base is 14cm. how many times can it go round a cylinder having radius 20 cm?",
+  "options": [
+   "A)42",
+   "B)49",
+   "C)52",
+   "D)59",
+   "E)62"
+  ],
+  "rationale": "Required number of rounds be x\nMore radius, less rounds(Indirect proportion)\nHence we can write as\nradius 14:20\n::x:70\n=14\u00d770=20x\n=14\u00d77=2x\nx=7\u00d77=49\nANSWER :B",
+  "correct": "B",
+  "id": "aqua_dev_0153"
+ },
+ {
+  "question": "The steamer going upstream would cover the distance between Town A and Town B in 5 hours. The same steamer going downstream would cover the distance between the towns in 3 hours. How long would it take a raft moving at the speed of the current to float from B to A?",
+  "options": [
+   "A)10 hours",
+   "B)12 hours",
+   "C)15 hours",
+   "D)18 hours",
+   "E)20 hours"
+  ],
+  "rationale": "Let D be the distance, let V be the speed of the steamer, and let x be the speed of the current.\nD / (V+x) = 3\nD / (V-x) = 5\n3V+3x = 5V-5x\nV = 4x\nD / (4x+x) = 3\nD/x = 15 hours\nThe answer is C.",
+  "correct": "C",
+  "id": "aqua_dev_0154"
+ },
+ {
+  "question": "Rijon is the bass player in a wedding band which has 9 musicians. When the gig is over, the manager collects the payment of $1000 from the bride and groom. The manager has a fee of $100.00 for booking the gig. How much will the manager have to give each musician in order to pay them equally?",
+  "options": [
+   "A)$72",
+   "B)$80",
+   "C)$81",
+   "D)$85",
+   "E)$100"
+  ],
+  "rationale": "After the manager subtracts his fee of $100.00, the amount of money remaining to pay the band members is $900.00 which must be divided by 9, since there are 9 musicians. $900.00 divided by 9 equals $100.00\nAnswer = E",
+  "correct": "E",
+  "id": "aqua_dev_0155"
+ },
+ {
+  "question": "A test consists of two sections. The first section contains 40 questions and the second section contains 80 questions. If a student answered 70 percent of all the questions in the test correctly and answered 60 percent of the questions in the second section correctly, what percent of the questions did the student answer in the first section correctly?",
+  "options": [
+   "A)65%",
+   "B)70%",
+   "C)75%",
+   "D)80%",
+   "E)90%"
+  ],
+  "rationale": "First ............. Second ............... Total\n40 ................... 80 ..................... 120\n120*70/100=84\n80*60/100=48\n84 - 48 = 36\nStudent result:\n36 ....................... 48 ................... 84\nPercentage =36/40*100=90\nANSWER:E",
+  "correct": "E",
+  "id": "aqua_dev_0156"
+ },
+ {
+  "question": "A merchant has three different types of milk: 435 liters, 493 liters and 551 liters. Find the least number of casks of equal size required to store all the milk without mixing.",
+  "options": [
+   "A)51",
+   "B)61",
+   "C)47",
+   "D)45",
+   "E)53"
+  ],
+  "rationale": "HCF of 435, 493, 551 = 29\n(453/29) + (493/29) + (551/29) = 51\nANSWER:A",
+  "correct": "A",
+  "id": "aqua_dev_0157"
+ },
+ {
+  "question": "The population of a city increases at the rate of 4% per annum. There is an additional annual increase of 1% in the population due to the influx of job seekers. Therefore, the % increase in the population after 2 years will be :",
+  "options": [
+   "A)10",
+   "B)10.25",
+   "C)10.55",
+   "D)10.75",
+   "E)None of these"
+  ],
+  "rationale": "The net annual increase = 5%.\nLet the initial population be 100.\nThen, population after 2 years = 100 \u00d7 1.05 \u00d7 1.05\n= 110.25\nTherefore, % increase in population\n= (110.25 \u2013 100) = 10.25% Answer B",
+  "correct": "B",
+  "id": "aqua_dev_0158"
+ },
+ {
+  "question": "In your study are displayed your 5 favourite puzzle books. If you decide to arrange the five books in every possible combination and moved just one book every minute, how long would it take you ?",
+  "options": [
+   "A)1 hour",
+   "B)2 hours",
+   "C)3 hours",
+   "D)4 hours",
+   "E)5 hours"
+  ],
+  "rationale": "Possible arrangements are 5*4*3*2*1= 120\nFor making a new arrangement , two books are required to be moved.\nso total 120*2=240 mins which will take 240 min or 4 hours.\nANSWER:D",
+  "correct": "D",
+  "id": "aqua_dev_0159"
+ },
+ {
+  "question": "A cheerleading squad practices 1 hour a day from Monday through Thursday for a competition on Saturday. How many hours would they need to practice on Friday in order to have practiced an average of 2 hours a day over the 5 days from Monday through Friday?",
+  "options": [
+   "A)4",
+   "B)5",
+   "C)6",
+   "D)7",
+   "E)8"
+  ],
+  "rationale": "Total number of hours practice from Monday through Thursday: 4*1 = 4\ntotal number of hours they will need to practice to average 2 hours a day over 5 days: 5*2 = 10\nThus, they still need to practice 10-4 = 6 hours on Friday\nC",
+  "correct": "C",
+  "id": "aqua_dev_0160"
+ },
+ {
+  "question": "A certain business printer can print 100 characters per second, which is 5 times faster than an average printer. If an average printer can print 4 times faster than an electric typewriter, how many characters per minute can an electric typewriter print?",
+  "options": [
+   "A)300",
+   "B)350",
+   "C)200",
+   "D)250",
+   "E)400"
+  ],
+  "rationale": "Rate at which a business printer can print = 100 characters per second\nRate at which an average printer can print = (100/5) characters per second = 20 characters per second\nAverage printer's rate = 4*Electric typewriter's rate\n=>Electric typewriter's rate = 20/4 = 5 characters per second = 5*60 characters per minute = 300 characters per minute\nAnswer A",
+  "correct": "A",
+  "id": "aqua_dev_0161"
+ },
+ {
+  "question": "50% of all high school students hate roller coasters; the rest love them. 20% of those students who love roller coasters own chinchillas. What percentage of students love roller coasters but do not own a chinchilla?",
+  "options": [
+   "A)12%",
+   "B)40%",
+   "C)48%",
+   "D)60%",
+   "E)80%"
+  ],
+  "rationale": "Make a Table as mentioned below\n---------------------------------------------Love Roller Coasters---------------------Hate Roller Coasters----------------Total\nOwn chinchillas--------------------------20% of 50%=10% --------------------\nDon't own chinchillas-------------------50%-10% = 40%----------------------\nTotal---------------------------------------------- 50% -------------------------------------50%-----------------------------\nAnswer: Option B",
+  "correct": "B",
+  "id": "aqua_dev_0162"
+ },
+ {
+  "question": "The binary representation of 0.6875 is ?",
+  "options": [
+   "A).1010",
+   "B).1011",
+   "C).1001",
+   "D).1000",
+   "E).1111"
+  ],
+  "rationale": "0.6875*2=1.375--1\n0.375*2=0.75--0\n0.75*2=1.50--1\n0.50*2=1.0--1\n0.6875=.1011\nANSWER:B",
+  "correct": "B",
+  "id": "aqua_dev_0163"
+ },
+ {
+  "question": "A letter has to be printed 100 lines with 80 character, if the same letter is printed with 40 characters per line, how many lines will it have?",
+  "options": [
+   "A)200",
+   "B)300",
+   "C)400",
+   "D)500",
+   "E)600"
+  ],
+  "rationale": "100 lines with 80 characters = 100*80=8000\nThen, the number of lines for 40 characters is 8000/40=200\nANSWER:A",
+  "correct": "A",
+  "id": "aqua_dev_0164"
+ },
+ {
+  "question": "The sum of 3rd and 15th elements of an arithmetic progression is equal to the sum of the 6th, 11th and 13th elements of the same progression. Then, which element of the series should necessarily be equal to zero ?",
+  "options": [
+   "A)1st",
+   "B)9th",
+   "C)12th",
+   "D)None of these",
+   "E)Cannot be determined"
+  ],
+  "rationale": "Let the 1st term be \u2018a\u2019 and common difference be \u2018d\u2019\nthen we have 3rd term = a + 2d\n15th term = a + 14d\n6th term = a + 5d\n11th term = a + 10d\n13th term = a + 12d\nSince sum of 3rd and 15th term = sum of 6th, 11th and 13th term, therefore we have\n=> 2a + 16d = 3a + 27d\n=> a + 11d = 0 i.e the 12th term.\nAnswer : C",
+  "correct": "C",
+  "id": "aqua_dev_0165"
+ },
+ {
+  "question": "A printer started its work at 8.15 a.m and ended its work at 9.20 p.m. It was interrupted twice for the time duration of 42 min. It can print 100 instructions per hour. Approximate how many instructions it printed?",
+  "options": [
+   "A)1268.333",
+   "B)1168.333",
+   "C)1368.333",
+   "D)2168.333",
+   "E)1868.333"
+  ],
+  "rationale": "From 8:15 to 9:20 it worked for 13 hrs 05 min\nDue to the two 42 min interrutions it only worked for 11:41 min\n100 instructions per hour total instructions printed are 1168.333\nANSWER:B",
+  "correct": "B",
+  "id": "aqua_dev_0166"
+ },
+ {
+  "question": "At an amusement park, tom bought a number of red tokens and green tokens. Each red token costs $0.05, and each green token costs $0.14. If Tom spent a total of exactly $2.06, how many token in total did Tom buy?",
+  "options": [
+   "A)216",
+   "B)27",
+   "C)28",
+   "D)34",
+   "E)20"
+  ],
+  "rationale": "Given:\n0.05R + 0.14G = 2.06;\n5R + 14G = 206.\nNow, it's special type of equations as G and R must be a non-negative integers, so there might be only one solution to it. After some trial and error you'll get (actually there are several ways of doing it):\nR = 30 and G = 4;\nR + G = 34.\nAnswer: D.",
+  "correct": "D",
+  "id": "aqua_dev_0167"
+ },
+ {
+  "question": "An accurate clock shows 7 o'clock in the morning. The hour hand then rotates by 90o. The time in the clock is:",
+  "options": [
+   "A)9 o'clock",
+   "B)10 o'clock",
+   "C)11 o'clock",
+   "D)12 o'clock",
+   "E)8 o'clock"
+  ],
+  "rationale": "As from 9 o'clock to 12 o'clock is 90 degrees, so 7 is two hours less than nine. Hence, the answer will be two hours less than 12, whic is 10 o'clock\nANSWER:B",
+  "correct": "B",
+  "id": "aqua_dev_0168"
+ },
+ {
+  "question": "If the volume of a tank is 4,120 cubic centimeters, what is the volume of the tank in cubic meters? (1 centimeter = 0.01 meter)",
+  "options": [
+   "A)0.00475",
+   "B)0.00412",
+   "C)0.475",
+   "D)4.75",
+   "E)47.5"
+  ],
+  "rationale": "1 cubic centimeter = 0.01 meter * 0.01 meter * 0.01 meter = 0.000001 cubic meters\n4,120 cubic centimeters = 4,120*0.000001 = 0.00412 cubic meters.\nAnswer: B.",
+  "correct": "B",
+  "id": "aqua_dev_0169"
+ },
+ {
+  "question": "How many parallelograms will be formed if 7 parallel horizontal lines intersect 6 parallel vertical lines?",
+  "options": [
+   "A)42",
+   "B)294",
+   "C)315",
+   "D)345",
+   "E)385"
+  ],
+  "rationale": "Parallelograms are formed when any two pairs of parallel lines (where each pair is not parallel to the other pair) intersect.\nHence, the given problem can be considered as selecting pairs of lines from the given 2 sets of parallel lines.\nTherefore, the total number of parallelograms formed = 7C2 x 6C2 = 315\nANSWER:C",
+  "correct": "C",
+  "id": "aqua_dev_0170"
+ },
+ {
+  "question": "A 5 liter mixture of water and sugar is 50% sugar. If 1 liter of water is added, approximately what is the % of the new mixture of sugar?",
+  "options": [
+   "A)40%",
+   "B)50%",
+   "C)60%",
+   "D)64%",
+   "E)68"
+  ],
+  "rationale": "Original quantity of water - 5 lits\nOriginal % of sugar - 50 %\nAdditional quantity of water added - 1 liter\n% of additional quantity of water added - 1/5 = 20 %\nApproximate decrease in the % of sugar in new mixture - 20 %\nApproximate decrease in the % sugar = 20 % of 50 % = 10 %\nApproximate new % of sugar = 50 % - 10 % = 40 %\nAnswer - A",
+  "correct": "A",
+  "id": "aqua_dev_0171"
+ },
+ {
+  "question": "In a very big class, 40% of the students enrolled for Math and 70% enrolled for Economics. If 15% of the students enrolled for both Math and Economics, what % of the students of the class did not enroll for either of the two subjects?",
+  "options": [
+   "A)0%",
+   "B)5%",
+   "C)15%",
+   "D)25%",
+   "E)35%"
+  ],
+  "rationale": "Students enrolled for either Math or Economics = 40+70-15=95\nThat gives the answer:100-95=5\nAnswer is B",
+  "correct": "B",
+  "id": "aqua_dev_0172"
+ },
+ {
+  "question": "A fisherman's day is rated as good if he catches 9 fishes, fair if he catches 7 fishes and poor if he catches 5 fishes. The fisherman catches 53 fishes in a week that includes good, fair and poor days. How many good days the fisherman had during the week?",
+  "options": [
+   "A)1",
+   "B)2",
+   "C)3",
+   "D)4",
+   "E)5"
+  ],
+  "rationale": "Good=9 fish on a days\nFair =7 fish on b days\nPoor=5 fish on c days\n9a+7b+5c=53\na+b+c=7\na=3\nANSWER:C",
+  "correct": "C",
+  "id": "aqua_dev_0173"
+ },
+ {
+  "question": "Some students arranged picnic. The budget was Rs. 240. Because four students of the group failed to go, the cost to each student was increased by Rs.5. How many students went for the picnic?",
+  "options": [
+   "A)12",
+   "B)13",
+   "C)14",
+   "D)15",
+   "E)16"
+  ],
+  "rationale": "Let x = Total number of students\nAnd x-4 = Number of students went for picnic.\nSo initial cost per student = Rs. 240 /x\n4 of students are failed to go, now cost per student = Rs.240 /(x-4)\nNow, [240 / (x-4)] - [240 /x] = 5\n240/(x-4) = (240+5x)/x\nBy solving this, we get\n(x-16)(x+12)=0\nSo, x=16 or x=-12. x cannot be negative.\nSo, No. of students, X = 16\nANSWER:E",
+  "correct": "E",
+  "id": "aqua_dev_0174"
+ },
+ {
+  "question": "A family of 2 parents and 2 children is waiting in line to order at a fast-food restaurant. Joey, the younger child, has a tendency to cause mischief when he is not watched carefully. Because of this, the father wants to keep Joey ahead of him in line at all times. How many different ways can the family arrange themselves in line, such that the father is able to watch Joey?",
+  "options": [
+   "A)6",
+   "B)12",
+   "C)24",
+   "D)36",
+   "E)72"
+  ],
+  "rationale": "The total # of ways to arrange 4 people is 4!=24. In half of the cases the father will be behind Joey and in half of the cases Joey will be behind his father. So, the answer is 4!/2=12.\nAnswer: B.",
+  "correct": "B",
+  "id": "aqua_dev_0175"
+ },
+ {
+  "question": "A certain straight corridor has four doors, A, B, C and D (in that order) leading off from the same side. How far apart are doors B and C? The distance between doors B and D is 10 meters. The distance between A and C is 12 meters.",
+  "options": [
+   "A)5",
+   "B)4",
+   "C)3",
+   "D)2",
+   "E)1"
+  ],
+  "rationale": "AB+BC=12 and BC+CD =10 hence BC=12-AB and BC= 10-CD hence 12-AB = 10 -CD\nAB-CD = 2 AB-CD is nothing but BC, hence BC= 2\nANSWER:D",
+  "correct": "D",
+  "id": "aqua_dev_0176"
+ },
+ {
+  "question": "You are buying pumpkins at a local farmer's market and are paying for the pumpkins by weight. Your container weighs 30 pounds. The pumpkins plus the container weighs 90 pounds. If you bought 10 pumpkins, how much was the average weight of your pumpkins?",
+  "options": [
+   "A)9 pounds",
+   "B)3 pounds",
+   "C)7 pounds",
+   "D)6 pounds",
+   "E)5 pounds"
+  ],
+  "rationale": "Total weight = 90\nContainer weight = 30\nWeight of pumpkins = 90 - 30\nAverage weight = (90-30)/10 = 6\nAnswer: D",
+  "correct": "D",
+  "id": "aqua_dev_0177"
+ },
+ {
+  "question": "Preston's Health Foods makes a mixed nut blend that contains 26% cashews. Simon, one of the workers at the plant, has 9 kilograms of nuts that are 30% cashews. He also has a large supply of mixed nuts that contain 22% cashews. How many kilograms of the 22% cashew mix does Simon need to add to the 30% cashew mix to obtain a mix that is 26% cashews?",
+  "options": [
+   "A)35kg",
+   "B)70kg",
+   "C)09kg",
+   "D)23kg",
+   "E)54kg"
+  ],
+  "rationale": "0.3(9) + 0.22x = 0.26(9 + x)\n2.7 + 0.22x = 2.34 + 0.26x\n2.7 \u2013 0.04x = 2.34\n-0.04x = -0.36\nx = 9\nAnswer is C.",
+  "correct": "C",
+  "id": "aqua_dev_0178"
+ },
+ {
+  "question": "A builder has to pour a concrete slab 12 centimeters thick to cover an area 10 meters long and 2 meters wide. How many cubic meters of concrete will the builder need?",
+  "options": [
+   "A)1.4 cubic meter",
+   "B)2.4 cubic meter",
+   "C)3.4 cubic meter",
+   "D)4.4 cubic meter",
+   "E)5.4 cubic meter"
+  ],
+  "rationale": "Thikness= 12cm. =0.12m.\narea is 10m. long and 2m. wide;\nSo, total concrete needed is = the volumn of the area = (0.12 * 10 * 2)= 2.4 cubic meter.\nANSWER:B",
+  "correct": "B",
+  "id": "aqua_dev_0179"
+ },
+ {
+  "question": "A man buys a watch for Rs. 1950 in cash and sells it for Rs. 2200 on credit of 1 year. If the rate of interest is 10% per annum, the man:",
+  "options": [
+   "A)gains Rs. 55",
+   "B)gains Rs. 50",
+   "C)loses Rs. 30",
+   "D)gains Rs. 30",
+   "E)None of these"
+  ],
+  "rationale": "Explanation:\nS.P. = P.W. of Rs. 2200 due in 1 year. Thus,\n=Rs.[2200\u00d7100/100+(10\u00d71)]\n= Rs. 2000.\nGain = Rs.(2000 - 1950) = Rs.50.\nAnswer: B",
+  "correct": "B",
+  "id": "aqua_dev_0180"
+ },
+ {
+  "question": "The cost of Brand V paper is proportional to the weight. If 12 ounces of Brand V paper cost $ 12, what is the cost of 16 ounces of Brand V paper?",
+  "options": [
+   "A)$18",
+   "B)$16",
+   "C)$15",
+   "D)$14",
+   "E)$20"
+  ],
+  "rationale": "Let cost per ounce of Brand V paper = c\n12c = 12\n=>c = 1\nTherefore\n=>16c = 16*1=16\nAnswer B",
+  "correct": "B",
+  "id": "aqua_dev_0181"
+ },
+ {
+  "question": "Last year Joe grew 2 inch and Sally grew 200 percent more than Joe grew. How many inches did Sally grow last year?",
+  "options": [
+   "A)0",
+   "B)1",
+   "C)2",
+   "D)3",
+   "E)4"
+  ],
+  "rationale": "Sally grows 200 % more than Joe grew. Joe grew 2 inch.\nSally grew (200/100)*1 = 4 inches.\nE is the answer.",
+  "correct": "E",
+  "id": "aqua_dev_0182"
+ },
+ {
+  "question": "Akhil has twice as much money as Sohan and Sohan has 50% more money than what Pankaj has. If the average money with them is Rs 110, then Akhil has",
+  "options": [
+   "A)Rs 55",
+   "B)Rs 60",
+   "C)Rs 90",
+   "D)Rs 180",
+   "E)Rs 160"
+  ],
+  "rationale": "et Pankaj has Rs x\nthen Sohan has 150% of Rs x = 150x/100\n= Rs 3x/2\nAkhil has 3x\nx + (3x/2) + 3x = 110*3\n=> 11x/2 =110*3\n=> x= 60\nAkhil has Rs 180\nAnswer : D",
+  "correct": "D",
+  "id": "aqua_dev_0183"
+ },
+ {
+  "question": "A password to a certain database consists of digits that cannot be repeated. If the password is known to consist of at least 8 digits and it takes 12 seconds to try one combination, what is the amount of time, in minutes, necessary to guarantee access to database?",
+  "options": [
+   "A)8!/5",
+   "B)8!/2",
+   "C)8!",
+   "D)10!/2",
+   "E)5/2.10!"
+  ],
+  "rationale": "Total # of passwords possible for 8 digits is P810=10!2\nTotal # of passwords possible for 9 digits is P910=10!\nTotal # of passwords possible for 10 digits is P1010=10!\nTime needed to guarantee access to database is (10!2+10!+10!)\u221715=10!2 minutes.\nAnswer: D.",
+  "correct": "D",
+  "id": "aqua_dev_0184"
+ },
+ {
+  "question": "A single refined oil can contains 20% impurities. After double\u2013refining, it contains 4% impurities. How much of double-refined oil can be obtained from 30 litres of single refined oil?",
+  "options": [
+   "A)24.0 litres",
+   "B)24.8 litres",
+   "C)25.0 litres",
+   "D)25.5 litres",
+   "E)26.5 litres"
+  ],
+  "rationale": "On double-refining impurity decreases from 20% to 4%, but the amount of pure oil in both cases remains constant,\ni.e, 96% of double refined oil = 80% of single refined oil.\nLet x be the quantity of double-refined oil\nThen 96*x/100 = 80*30/100, x = 30*80 /96 = 25\nANSWER:C",
+  "correct": "C",
+  "id": "aqua_dev_0185"
+ },
+ {
+  "question": "In an election, 68% of the voters exercised their franchise. Of these, 48% were women. The number of males exercising their franchise was 53,040. How many eligible voters were there in total?",
+  "options": [
+   "A)78741",
+   "B)78781",
+   "C)78941",
+   "D)77841",
+   "E)77941"
+  ],
+  "rationale": "Let the eligible voters be x. Then, voters exercised their franchise is 0.68x. Number of woman voters = 0.48 X 0.68x\nTherefore, number of male voters = x- 0.48X0.68x = 53040.\n53040 = 0.6736x\nTherefore, x = 53040/0.6736 =78741\nA",
+  "correct": "A",
+  "id": "aqua_dev_0186"
+ },
+ {
+  "question": "A man invests Rs. 128 and obtained Rs. 16. The interest obtained by him is:",
+  "options": [
+   "A)8 %",
+   "B)12 %",
+   "C)12.5 %",
+   "D)16 %",
+   "E)18 %"
+  ],
+  "rationale": "By investing Rs. 128, income derived = Rs. 16.\nBy investing Rs. 100, income derived = Rs.(16/128x100)= Rs. 12.5.\n\u2234 Interest obtained = 12.5 %.\nAnswer C",
+  "correct": "C",
+  "id": "aqua_dev_0187"
+ },
+ {
+  "question": "Lindsay can paint 25% of a certain room in 20 minutes. What fraction of the same room can Joseph paint in 20 minutes if the two of them can paint the room in an hour, working together at their respective rates?",
+  "options": [
+   "A)3 %",
+   "B)2.9 %",
+   "C)8.4 %",
+   "D)6.1 %",
+   "E)7.6 %"
+  ],
+  "rationale": "Person - Lindsay - Joseph - (L+J)\nTime---- ( 20 )----( 20 ) ------(60)\nRate----(1.25) --- (0.42) -------(1.67)\nWork---(25) --------(-) -------(100)\nFraction of work completed by Joseph = 20*0.42 = 8.4 %\nAns - C",
+  "correct": "C",
+  "id": "aqua_dev_0188"
+ },
+ {
+  "question": "A, B and C start at the same time in the same direction to run around a circular stadium. A completes a round in 252 seconds, B in 308 seconds and c in 198 seconds, all starting at the same point. After what time will they again at the starting point ?",
+  "options": [
+   "A)26 minutes and 18 seconds",
+   "B)42 minutes and 36 seconds",
+   "C)45 minutes",
+   "D)46 minutes and 12 seconds",
+   "E)46 minutes"
+  ],
+  "rationale": "L.C.M. of 252, 308 and 198 = 2772.\nSo, A, B and C will again meet at the starting point in 2772 sec. i.e., 46 min. 12 sec.\nAnswer: Option D",
+  "correct": "D",
+  "id": "aqua_dev_0189"
+ },
+ {
+  "question": "A house sold for $500,000 in 1990 and sold ten years later for $400,000. By what percent did the value of the house change?",
+  "options": [
+   "A)20%",
+   "B)0%",
+   "C)-10%",
+   "D)-20%",
+   "E)-25%"
+  ],
+  "rationale": "% Change= (F-I)/I x100, where F is the final value and I is the initial value.\n($400,000-$500,000)/$500,000= -0.2. A negative value means that the house fell in value. Thus, the value of the house dropped by 20%\nAnswer D",
+  "correct": "D",
+  "id": "aqua_dev_0190"
+ },
+ {
+  "question": "The distance between Omaha and Lincoln is 60 miles. John drives a car that gets 30 miles per gallon of gas, and David drives a car that gets 20 miles per gallon. How many more gallons of gas does David use on a round trip from Omaha to Lincoln?",
+  "options": [
+   "A)2",
+   "B)3",
+   "C)4",
+   "D)5",
+   "E)6"
+  ],
+  "rationale": "Ratio of John Car efficiency : David Car efficiency = 30:20\nRound trip takes 120 miles. Hence converting any one of the base for 120 = 180:120\nMeans if David travel 120 miles for the same gallons Omaha travled 180 miles. The gallon required to travel extra 60 miles is\nHence = 60/30 = 2\nAnswer : A",
+  "correct": "A",
+  "id": "aqua_dev_0191"
+ },
+ {
+  "question": "When a number is divided by 6 and then multiplied by 12 and the answer is 9, what is the number?",
+  "options": [
+   "A)4.5",
+   "B)5",
+   "C)6",
+   "D)6.7",
+   "E)7.7"
+  ],
+  "rationale": "if $x$ is the number, x/6 * 12 = 9\n=> 2x = 9\n=> x = 4.5\nA",
+  "correct": "A",
+  "id": "aqua_dev_0192"
+ },
+ {
+  "question": "A, B and C are three contestants in a 1000 m race. If A finishes the race 40 m ahead of B and 64 m ahead of C, how much did each of them cover at that time?",
+  "options": [
+   "A)When B covers 890 m, C covers 866 m.",
+   "B)When B covers 860 m, C covers 836 m.",
+   "C)When B covers 930 m, C covers 906 m.",
+   "D)When B covers 960 m, C covers 936 m.",
+   "E)When B covers 990 m, C covers 966 m."
+  ],
+  "rationale": "While A covers 1000 m, B covers (1000 - 40) m = 960 m and\nC covers (1000 - 64) m or 936 m.\nAnswer is D.",
+  "correct": "D",
+  "id": "aqua_dev_0193"
+ }
+]

@@ -1,0 +1,2119 @@
+[
+ {
+  "id": "aqua_test_0002",
+  "question": "Find out which of the following values is the multiple of X, if it is divisible by 9 and 12?",
+  "rationale": "9=3*3\n12=3*4\nThe number should definitely have these factors 3*3*4\n36 is the number that has these factors\nSo, 36 is the multiple of X\nAnswer is A",
+  "correct": "A",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "36"
+   },
+   {
+    "label": "B",
+    "text": "15"
+   },
+   {
+    "label": "C",
+    "text": "17"
+   },
+   {
+    "label": "D",
+    "text": "5"
+   },
+   {
+    "label": "E",
+    "text": "7"
+   }
+  ],
+  "verified": true,
+  "topic": "number-properties",
+  "difficulty": 2,
+  "hints": [
+   "A number divisible by both 9 and 12 must be divisible by what single number related to them?",
+   "Find the least common multiple of 9 and 12 by combining their prime factors.",
+   "Compute LCM(9,12) = 36 and check which option is divisible by it."
+  ],
+  "distractor_diagnoses": {
+   "B": "15 is divisible by 3 but not by 9 or 4, so it fails the requirement.",
+   "C": "17 is prime and shares no factors with 9 or 12.",
+   "D": "5 shares no factors with 9 or 12.",
+   "E": "7 shares no factors with 9 or 12."
+  },
+  "needs_review": true,
+  "review_note": "The question wording is garbled ('multiple of X' is undefined), though the intended LCM answer matches the key.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_test_0010",
+  "question": "A company produces 420 units of a particular computer component every month, at a production cost to the company of $110 per component, and sells all of the components by the end of each month. What is the minimum selling price per component that will guarantee that the yearly profit (revenue from sales minus production costs) will be at least $626,400 ?",
+  "rationale": "450*12(x-110)=626400\nwhere x is a selling cost of one item\nx-110, is a profit from one item\n450 - number of items produced and sold per month\n12 - is a number of month in a year\nSimplifying the equation will lead to x-110=116, then x = 230\nB",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "226"
+   },
+   {
+    "label": "B",
+    "text": "230"
+   },
+   {
+    "label": "C",
+    "text": "240"
+   },
+   {
+    "label": "D",
+    "text": "260"
+   },
+   {
+    "label": "E",
+    "text": "280"
+   }
+  ],
+  "verified": false,
+  "topic": "algebra",
+  "difficulty": 4,
+  "hints": [
+   "Yearly profit is the per-unit profit times the number of units made in a year. How many units is that?",
+   "Profit per unit is (x \u2212 110); units per year is 420 \u00d7 12.",
+   "Solve 420 \u00d7 12 \u00d7 (x \u2212 110) = 626,400 for x."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely from using 450 units/month instead of 420, which the rationale did.",
+   "C": "You may have used a wrong monthly count or rounded up.",
+   "D": "You used a wrong number of months or units.",
+   "E": "You over-estimated the per-unit profit."
+  },
+  "needs_review": true,
+  "review_note": "With the stated 420 units/month, x \u2248 234.29, matching no option; the rationale uses 450 units (giving 226, option A), yet the key is marked B(230), so the key is inconsistent.",
+  "solution_steps": 6
+ },
+ {
+  "id": "aqua_test_0069",
+  "question": "Six pita breads contain the same amount of falafel as do two rolls. Three rolls contain the same amount of falafel as five baguettes do. Two baguettes contain the same amount of falafel as how many pita breads?",
+  "options": [
+   "A)12/25",
+   "B)3/2",
+   "C)3",
+   "D)2",
+   "E)25/3"
+  ],
+  "rationale": "6P = 2R\n3R = 5B\n2B = ?P\nThus, P : R : B = 18 : 6 : 12\nP : B = 18 : 12\n= 3 : 2\nThus P = 3\nAnswer : C",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "12/25"
+   },
+   {
+    "label": "B",
+    "text": "3/2"
+   },
+   {
+    "label": "C",
+    "text": "3"
+   },
+   {
+    "label": "D",
+    "text": "2"
+   },
+   {
+    "label": "E",
+    "text": "25/3"
+   }
+  ],
+  "verified": false,
+  "topic": "ratio-and-proportion",
+  "difficulty": 4,
+  "hints": [
+   "How can you express rolls and baguettes in terms of pita breads using the two given equivalences?",
+   "From 6P = 2R get R in terms of P, then substitute into 3R = 5B to relate B to P.",
+   "Solve for B in terms of P, then compute 2B as a multiple of P."
+  ],
+  "distractor_diagnoses": {
+   "A": "Inverts the chain of ratios.",
+   "B": "Stops at the P:B = 3:2 ratio rather than computing 2B.",
+   "D": "Likely a computation slip in chaining the ratios.",
+   "E": "Inverts the proportion direction."
+  },
+  "needs_review": true,
+  "review_note": "Solving the chain gives 2B = 18P/5 = 3.6 pita, which is not the marked answer C (3) nor any clean option, so the key is inconsistent.",
+  "solution_steps": 7
+ },
+ {
+  "id": "aqua_test_0106",
+  "question": "The number of water lilies on a certain lake doubles every two days. If there is exactly one water lily on the lake, it takes 60 days for the lake to be fully covered with water lilies. In how many days will the lake be fully covered with lilies, if initially there were 64 water lilies on it?",
+  "options": [
+   "A)15",
+   "B)28",
+   "C)30",
+   "D)53",
+   "E)59"
+  ],
+  "rationale": "Starting from 1 Water Lilly it takes 60 days.\nIf there are already two present, it can be taken as the first day is over.\nIt will take 59 more days.\nNotice that we are told thatthe number of water lilies on a certain lake doubles every two days, thus if initially there were 64 water lilies instead of one, we can consider that 7 days are over and therefore only 53 days are left.\nAnswer: D.",
+  "correct": "D",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "15"
+   },
+   {
+    "label": "B",
+    "text": "28"
+   },
+   {
+    "label": "C",
+    "text": "30"
+   },
+   {
+    "label": "D",
+    "text": "53"
+   },
+   {
+    "label": "E",
+    "text": "59"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 4,
+  "hints": [
+   "How many doublings turn 1 lily into 64, and how much time does each doubling consume?",
+   "Express 64 as a power of 2 to count the number of doublings already achieved.",
+   "Multiply the number of doublings by the days per doubling and subtract that head start from 60."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "E": "Treats 64 as just one doubling, subtracting too little time."
+  },
+  "needs_review": true,
+  "review_note": "With doubling every two days, 64 = 2^6 implies 6 doublings = 12 days saved, giving 48 days, which is not the marked answer 53 nor any option; the rationale's '7 days' step is inconsistent.",
+  "solution_steps": 4
+ },
+ {
+  "id": "aqua_test_0112",
+  "question": "During one season, a tennis team won 20 matches and lost 30% of their matches. What was the number of matches that the team lost?",
+  "options": [
+   "A)70",
+   "B)30",
+   "C)3",
+   "D)7",
+   "E)5"
+  ],
+  "rationale": "Knowing that the team lost 30 % of their matches, it has won 70 % of their matches\nTotal matches = 20 / (70/ 100) = 14\nHence number of matches that the team lost = 20 x 14/100 = 3=C",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "70"
+   },
+   {
+    "label": "B",
+    "text": "30"
+   },
+   {
+    "label": "C",
+    "text": "3"
+   },
+   {
+    "label": "D",
+    "text": "7"
+   },
+   {
+    "label": "E",
+    "text": "5"
+   }
+  ],
+  "verified": false,
+  "topic": "percentages",
+  "difficulty": 3,
+  "hints": [
+   "If the 20 wins represent the matches not lost, what fraction of the total do they make up?",
+   "Recognize the 20 wins are 70% of the total, so find the total first.",
+   "Compute total = 20 / 0.70, then take 30% of that total for the losses."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Misreads 30% as 30 matches.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "Wins of 20 equal 70% of total, giving total about 28.57 and losses about 8.57, so no integer matches the marked answer C and the rationale's arithmetic (20 x 14/100) is invalid.",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_test_0114",
+  "question": "If n is such that 36 \u2264 n \u2264 72, then x = (n2 + 2\u221an(n + 4) + 16) / (n+ 4\u221an+ 4) satisfies",
+  "options": [
+   "A)20 < x < 54",
+   "B)23 < x < 58",
+   "C)25 < x < 64",
+   "D)28 < x < 60",
+   "E)None of these"
+  ],
+  "rationale": "36 \u2264 n \u2264 72\nx = (n2 + 2\u221an(n + 4) + 16) / (n+ 4\u221an+ 4)\nPut x = 36,\nx = (362 + 2\u221a36(36 + 4) + 16) / (36+ 4\u221a36+ 4)\ni.e which is least value for n = 28.\nAnswer : D",
+  "correct": "D",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "20 < x < 54"
+   },
+   {
+    "label": "B",
+    "text": "23 < x < 58"
+   },
+   {
+    "label": "C",
+    "text": "25 < x < 64"
+   },
+   {
+    "label": "D",
+    "text": "28 < x < 60"
+   },
+   {
+    "label": "E",
+    "text": "None of these"
+   }
+  ],
+  "verified": true,
+  "topic": "algebra",
+  "difficulty": 5,
+  "hints": [
+   "Can the messy numerator and denominator each be recognized as a perfect square in terms of sqrt(n)?",
+   "Try to factor numerator and denominator so the expression simplifies to something linear in sqrt(n).",
+   "Evaluate the simplified expression at the endpoints n = 36 and n = 72 to bound x."
+  ],
+  "distractor_diagnoses": {
+   "A": "Uses the wrong endpoint values when bounding x.",
+   "B": "Likely a computation slip at the endpoints.",
+   "C": "Likely a computation slip at the endpoints.",
+   "E": "Incorrectly rejects the valid interval."
+  },
+  "needs_review": true,
+  "review_note": "The expression is transcribed ambiguously (unclear radicals and grouping), so the simplification and bounds cannot be reliably reproduced from the given text.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_test_0117",
+  "question": "A paper is in a square form whose one side is 20 cm. Two semi circles are drawn on its opposites as diameters. If these semi circles are cut down what is the area of the remaining paper?",
+  "options": [
+   "A)8.75",
+   "B)8.79",
+   "C)8.75",
+   "D)8.71",
+   "E)8.72"
+  ],
+  "rationale": "(5 * 3.5)/2 = 8.75\nAnswer:C",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "8.75"
+   },
+   {
+    "label": "B",
+    "text": "8.79"
+   },
+   {
+    "label": "C",
+    "text": "8.75"
+   },
+   {
+    "label": "D",
+    "text": "8.71"
+   },
+   {
+    "label": "E",
+    "text": "8.72"
+   }
+  ],
+  "verified": false,
+  "topic": "geometry",
+  "difficulty": 3,
+  "hints": [
+   "How does the combined area of the two semicircles relate to a full circle whose diameter is the square's side?",
+   "Compute the square's area, then the area of one full circle formed by the two semicircles (radius 10).",
+   "Subtract the circle's area pi*10^2 from the square's area 20^2 to get the remaining paper."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The correct remaining area is 400 - 100pi (about 85.8 sq cm), but all options cluster near 8.7 and the rationale's '(5*3.5)/2' is unrelated; the answer key and options are broken (A and C are also duplicates).",
+  "solution_steps": 2
+ },
+ {
+  "id": "aqua_test_0125",
+  "question": "The sum of the digits of a three digit number is 17, and the sum of the squares of its digits is 109. If we subtract 495 from the number, we shall get a number consisting of the same digits written in the reverse order. Find the number.",
+  "options": [
+   "A)368",
+   "B)377",
+   "C)288",
+   "D)997",
+   "E)112"
+  ],
+  "rationale": "Sum of the squares should be equal to 109. Only Options B and D satisfying. When we subtract 495, only 863 becomes 368\nAnswer:A",
+  "correct": "A",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "368"
+   },
+   {
+    "label": "B",
+    "text": "377"
+   },
+   {
+    "label": "C",
+    "text": "288"
+   },
+   {
+    "label": "D",
+    "text": "997"
+   },
+   {
+    "label": "E",
+    "text": "112"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 5,
+  "hints": [
+   "What three conditions on the digits must hold simultaneously, including the reversal after subtracting 495?",
+   "Use digit-sum 17 and digit-square-sum 109 to narrow the candidate digit sets.",
+   "Test which candidate, when 495 is subtracted, yields its own digit reversal."
+  ],
+  "distractor_diagnoses": {
+   "B": "Digit-square sum check fails for this candidate.",
+   "C": "Digit sum is not 17.",
+   "D": "Subtracting 495 does not produce the reversal.",
+   "E": "Digit sum and square sum both fail."
+  },
+  "needs_review": true,
+  "review_note": "The number actually satisfying all conditions is 863 (495 subtracted gives its reverse 368), but 863 is not an option and the key marks 368, which is the reversed result rather than the number asked for.",
+  "solution_steps": 2
+ },
+ {
+  "id": "aqua_test_0139",
+  "question": "Winson runs from his home to his school at an average speed of 10 miles/hr, and then walks home along the same route at an average speed of 5 miles/hr. If the whole journey took one hour, how many miles is his home from his school?",
+  "options": [
+   "A)9",
+   "B)6",
+   "C)4",
+   "D)3",
+   "E)2"
+  ],
+  "rationale": "Suppose x is the distance then\ngoing time + coming time = total time = 1 hour\nx/10 + x/5 = 1\nx = 1.5=2 miles\nAnswer E.",
+  "correct": "E",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "9"
+   },
+   {
+    "label": "B",
+    "text": "6"
+   },
+   {
+    "label": "C",
+    "text": "4"
+   },
+   {
+    "label": "D",
+    "text": "3"
+   },
+   {
+    "label": "E",
+    "text": "2"
+   }
+  ],
+  "verified": false,
+  "topic": "speed-time-distance",
+  "difficulty": 3,
+  "hints": [
+   "Each leg covers the same distance but at a different speed; how do their times add to one hour?",
+   "Write each leg's time as distance divided by its speed.",
+   "Solve x/10 + x/5 = 1 for x."
+  ],
+  "distractor_diagnoses": {
+   "A": "Gross arithmetic error.",
+   "B": "Multiplying speeds or a setup error.",
+   "C": "Computation slip solving the equation.",
+   "E": "The marked key value; results from solving x*(3/10)=1 incorrectly as 1.5 then rounding to 2."
+  },
+  "needs_review": true,
+  "review_note": "Solving x/10 + x/5 = 1 gives x = 10/3 \u2248 3.33, closest to option D(3), not the marked E(2); the rationale's '1.5=2' is arithmetically wrong.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_test_0152",
+  "question": "If Jill needed to buy 10 bottles of soda for a party in which 8 people attended, how many bottles of soda will she need to buy for a party in which 12 people are attending?",
+  "options": [
+   "A)6",
+   "B)8",
+   "C)10",
+   "D)12",
+   "E)14"
+  ],
+  "rationale": "We can set up a proportion to solve:\n10 bottles / 8 people = x bottles / 12 people.\nCross-multiply to solve a proportion:\n(10)(12) = (8)(x)\n120 = 8x\n10 = x\nAnswer :C.",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "6"
+   },
+   {
+    "label": "B",
+    "text": "8"
+   },
+   {
+    "label": "C",
+    "text": "10"
+   },
+   {
+    "label": "D",
+    "text": "12"
+   },
+   {
+    "label": "E",
+    "text": "14"
+   }
+  ],
+  "verified": false,
+  "topic": "ratio-and-proportion",
+  "difficulty": 2,
+  "hints": [
+   "Bottles should scale in proportion to the number of people; what ratio stays fixed?",
+   "Set bottles per person equal across both parties.",
+   "Solve 10/8 = x/12 for x."
+  ],
+  "distractor_diagnoses": {
+   "A": "Inverting the proportion.",
+   "B": "Using people count as the answer.",
+   "D": "Off-by-one or partial scaling.",
+   "E": "Adding the difference in people to the bottles."
+  },
+  "needs_review": true,
+  "review_note": "Correct proportion 10/8 = x/12 gives x = 15 (not an option); the rationale and key incorrectly solve 120 = 8x as 10, so the answer key is arithmetically wrong.",
+  "solution_steps": 6
+ },
+ {
+  "id": "aqua_test_0164",
+  "question": "Sharon works for 5 hours to earn enough tips to buy an ice cream cake, while Karen works for 4. After how many hours will they be able to buy the cake together?",
+  "options": [
+   "A)1 hour",
+   "B)2 hours",
+   "C)3 hours",
+   "D)4 hours",
+   "E)5 hours"
+  ],
+  "rationale": "Sharon's earnings = 1/5 cake per hour\nKaren's earnings = 1/4 cake per hour\nSharon + Karen's earnings= 9/20\nThey will be able to buy the cake in just over 2 hours\ncorrect option is C",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "1 hour"
+   },
+   {
+    "label": "B",
+    "text": "2 hours"
+   },
+   {
+    "label": "C",
+    "text": "3 hours"
+   },
+   {
+    "label": "D",
+    "text": "4 hours"
+   },
+   {
+    "label": "E",
+    "text": "5 hours"
+   }
+  ],
+  "verified": false,
+  "topic": "work-and-rates",
+  "difficulty": 3,
+  "hints": [
+   "Each person earns a fraction of a cake per hour; how do their rates combine?",
+   "Add the per-hour rates 1/5 and 1/4.",
+   "Time to reach one full cake = 1 / (1/5 + 1/4)."
+  ],
+  "distractor_diagnoses": {
+   "A": "Underestimating the combined time.",
+   "B": "Rounding 20/9 \u2248 2.22 down to 2, the exact combined-rate answer.",
+   "D": "Averaging the two times.",
+   "E": "Using only Sharon's time."
+  },
+  "needs_review": true,
+  "review_note": "Combined rate 9/20 cake/hr gives 20/9 \u2248 2.22 hours; the rationale says 'just over 2 hours' yet the key marks C(3), which is inconsistent with the work.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_test_0165",
+  "question": "If x<0, y>0, and |x^3| > |y^2|, which of the following must be true?",
+  "options": [
+   "A)x > y",
+   "B)y^2 > x^2",
+   "C)-x^3 < y^2",
+   "D)\u2013x < y",
+   "E)x < \u2013y"
+  ],
+  "rationale": "Let\u2019s go through each answer choice: (A) can never be true, since no negative is greater than a positive. (B) doesn\u2019t have to be true \u2013 consider what would happen if x = -2 and y = 1. (C) can never be true, as x^3 must be negative, and y^2 must be positive. (D) can never be true, since if x < 0, -x is the same thing as |x|, and |x| > y. (E) can be manipulated by multiplying both sides by -1, which gives us \u2013x > y. Remember that x < 0, so \u2013x = |x|, and y is positive, so |y| = y. Thus \u2013x^3 > y^2 is the same statement as |x^3| > |y^2|, and (B) must be true.",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "x > y"
+   },
+   {
+    "label": "B",
+    "text": "y^2 > x^2"
+   },
+   {
+    "label": "C",
+    "text": "-x^3 < y^2"
+   },
+   {
+    "label": "D",
+    "text": "\u2013x < y"
+   },
+   {
+    "label": "E",
+    "text": "x < \u2013y"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 5,
+  "hints": [
+   "With x negative and y positive, translate the absolute-value inequality into a relation between -x and y.",
+   "Since x<0, |x^3| = -x^3 = (-x)^3 and |y^2| = y^2; rewrite the given inequality with -x = |x|.",
+   "From (-x)^3 > y^2 with -x>0 and y>0, deduce the order of -x and y, then test each choice."
+  ],
+  "distractor_diagnoses": {
+   "A": "A negative can never exceed a positive.",
+   "C": "-x^3 is positive and equals |x^3|, which exceeds y^2, not less.",
+   "D": "-x = |x| > y from the given inequality, so this is false.",
+   "E": "Equivalent to -x > y, which is what the condition actually forces to be true."
+  },
+  "needs_review": true,
+  "review_note": "Counterexample x=-2, y=1 satisfies all premises but makes y^2 > x^2 false, so B is not must-be-true; choice E (x < -y, i.e. -x > y) is the one actually forced, so the key/rationale is flawed.",
+  "solution_steps": 1
+ },
+ {
+  "id": "aqua_test_0172",
+  "question": "Allen starts from X, goes to Y. At the same time Bob starts from Y and goes towards X. Once Allen reaches Y he changes his direction and returns to X. Once Bob reaches X, he changes his direction and returns to Y. Throughout Allen travels at 54 kmph and Bob travels at 78kmph. By the time they meet for the second time, Bob covers 48 km more than Allen. Find the distance between X and Y.",
+  "options": [
+   "A)144km",
+   "B)72 km",
+   "C)126km",
+   "D)84 km",
+   "E)48km"
+  ],
+  "rationale": "Total distance 126km\nin an hour both Allen and Bob covered 126km\nthat is 54+78=132\nthey meet for the first time Bob covered more KM than Allen. 78-54=24.\nso when they meet for the second time Bob covered 24*2= 48 more km (ANSWER E)",
+  "correct": "E",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "144km"
+   },
+   {
+    "label": "B",
+    "text": "72 km"
+   },
+   {
+    "label": "C",
+    "text": "126km"
+   },
+   {
+    "label": "D",
+    "text": "84 km"
+   },
+   {
+    "label": "E",
+    "text": "48km"
+   }
+  ],
+  "verified": false,
+  "topic": "speed-time-distance",
+  "difficulty": 5,
+  "hints": [
+   "At the second meeting the pair together has covered three times the distance between X and Y; how does that fix the time?",
+   "Use the speed difference (78-54) over the total travel time to express how much more Bob covers.",
+   "By the second meeting combined distance = 3D, so time = 3D/132; set (78-54)*time = 48 and solve for D."
+  ],
+  "distractor_diagnoses": {
+   "A": "Doubling a wrong intermediate distance.",
+   "B": "Halving a wrong intermediate distance.",
+   "C": "Confusing the combined hourly distance with the gap.",
+   "D": "Computation slip in solving for D."
+  },
+  "needs_review": true,
+  "review_note": "At the second meeting combined distance is 3D, so (78-54)*(3D/132)=48 gives D=88 km (not an option); the marked E(48) is the given gap, not the distance, so the key is incorrect.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_test_0184",
+  "question": "A certain phone manufacturer ships its products in crates. A crate consists of p pallets, and each pallet holds 1250 phones. If the manufacturer ships 4 crates, how many phones are shipped?",
+  "options": [
+   "A)1000p",
+   "B)1500p",
+   "C)2000p",
+   "D)2500p",
+   "E)30000"
+  ],
+  "rationale": "1 pallet has 1250 phones, so p pallets hold 1250p phones\n1 crate has 1250p phones, so 4 will have 1250p * 3 = 2500p",
+  "correct": "D",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "1000p"
+   },
+   {
+    "label": "B",
+    "text": "1500p"
+   },
+   {
+    "label": "C",
+    "text": "2000p"
+   },
+   {
+    "label": "D",
+    "text": "2500p"
+   },
+   {
+    "label": "E",
+    "text": "30000"
+   }
+  ],
+  "verified": false,
+  "topic": "algebra",
+  "difficulty": 2,
+  "hints": [
+   "Build up from phones per pallet to phones per crate to four crates.",
+   "One crate holds 1250p phones.",
+   "Multiply 1250p by 4 crates."
+  ],
+  "distractor_diagnoses": {
+   "A": "Using a wrong per-pallet count.",
+   "B": "Computation slip in the multiplication.",
+   "C": "Computation slip in the multiplication.",
+   "E": "Dropping the variable p and inventing a fixed number."
+  },
+  "needs_review": true,
+  "review_note": "4 crates * 1250p = 5000p, but the rationale erroneously multiplies by 3 to get 2500p and no option lists 5000p, so the marked key D is wrong.",
+  "solution_steps": 1
+ },
+ {
+  "id": "aqua_test_0193",
+  "question": "Suppose for any real number x, [x] denotes the greatest integer less than or equal to x. Let L(x,y) = [x] + [y] + [x + y] and R(x,y) = [2x] + [2y]. Then it is impossible to find any two positive real numbers x and y for which",
+  "options": [
+   "A)L(x,y) = R(x,y)",
+   "B)L(x,y) \u2260 R(x,y)",
+   "C)L(x,y) < R(x,y)",
+   "D)L(x,y) < R(x,y)",
+   "E)None"
+  ],
+  "rationale": "x \u2013 1\u2264 [x] \u2264 x\n2x + 2y - 3 \u2264 L(x,y) \u2264 2x + 2y\n=> a \u2013 3 \u2264 L \u2264 a\n2x + 2y -2 \u2264 L(x,y) \u2264 2x + 2y\n=> a \u2013 2 \u2264 R \u2264 a\nTherefore, L \u2264 R.\nAnswer : D",
+  "correct": "D",
+  "choices": [
+   {
+    "label": "A",
+    "text": "L(x,y) = R(x,y)"
+   },
+   {
+    "label": "B",
+    "text": "L(x,y) \u2260 R(x,y)"
+   },
+   {
+    "label": "C",
+    "text": "L(x,y) < R(x,y)"
+   },
+   {
+    "label": "D",
+    "text": "L(x,y) < R(x,y)"
+   },
+   {
+    "label": "E",
+    "text": "None"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 5,
+  "hints": [
+   "How do the floor of a sum and the sum of floors compare for two reals?",
+   "Establish that the floor function satisfies [x]+[y]+[x+y] \u2264 [2x]+[2y] for all reals.",
+   "Since L \u2264 R always holds, identify which stated relation can therefore never occur."
+  ],
+  "distractor_diagnoses": {
+   "A": "L=R is achievable (e.g. integer x,y), so it is not impossible.",
+   "B": "L\u2260R is achievable, so it is not impossible.",
+   "C": "Identical text to option D, making the key ambiguous.",
+   "E": "Assumed every relation is possible."
+  },
+  "needs_review": true,
+  "review_note": "Options C and D have identical text 'L(x,y) < R(x,y)', so the marked answer D cannot be distinguished from C; question is ambiguous.",
+  "solution_steps": 8,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_test_0228",
+  "question": "If Q, a positive integer, has 5 factors, which of the following must be true about Q?\nI. Q is the square of a prime number.\nII. Q is the fourth power of a prime number.\nIII. Q is the product of two prime numbers.",
+  "options": [
+   "A)I only",
+   "B)III only",
+   "C)II only",
+   "D)I and II only",
+   "E)I and III only"
+  ],
+  "rationale": "If Q has 5 factors, we can represent Q = a^4, where a is positive integer more than 1.Let's assume that \"a\" is not a prime number. Let a = kp, where both k and p are positive integers.\nThus, Q = (kp)4=k4\u2217p4(kp)4=k4\u2217p4. Now the number of factors of Q = (4+1)*(4+1) = 25. But as the given condition states that Q has ONLY 5 factors, thus \"a\" can't have any other factor except 1 and itself. Thus, a = prime number.\nStatement I :We can represent Q = (a^2)^2. Thus, we have to prove whether a^2 is a prime number. Take a=2. We can see that it is not a prime number. Thus, this option can't answer a \"MUST be true question\"\nStatement II : Always true as proved above.\nStatement III : Again take a =2. Thus, Q = 64. We don't have this as product of 2 primes.\nThe Answer is, B.",
+  "correct": "B",
+  "choices": [
+   {
+    "label": "A",
+    "text": "I only"
+   },
+   {
+    "label": "B",
+    "text": "III only"
+   },
+   {
+    "label": "C",
+    "text": "II only"
+   },
+   {
+    "label": "D",
+    "text": "I and II only"
+   },
+   {
+    "label": "E",
+    "text": "I and III only"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 5,
+  "hints": [
+   "A number's factor count comes from its prime exponents; what exponent pattern yields exactly 5 factors?",
+   "Since 5 is prime, the factor count (e+1) forces a single prime raised to the 4th power, Q = p^4.",
+   "Test each statement against Q = p^4 (e.g. Q = 16) to see which MUST hold."
+  ],
+  "distractor_diagnoses": {
+   "A": "Statement I fails since p^2 (e.g. 4) is not prime.",
+   "B": "Statement III fails: p^4 is not a product of two primes.",
+   "D": "Includes the false Statement I.",
+   "E": "Includes the false Statements I and III."
+  },
+  "needs_review": true,
+  "review_note": "Marked answer is B (III only), but Q must equal p^4 so only Statement II is true; the rationale itself proves II yet selects B, a contradiction.",
+  "solution_steps": 8,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_test_0232",
+  "question": "By himself, Jack can clean a yacht in 12 hours. On a particular day, he happens to finish two-thirds of the work. The remaining portion of the work is done by Jill, whose rate of cleaning is just 5% of what Jack can do. How long does it take Jill to finish the remaining work?",
+  "options": [
+   "A)4",
+   "B)8",
+   "C)22",
+   "D)50",
+   "E)20"
+  ],
+  "rationale": "Jack did 2/3 of the work, which is 8 hours. So if Jack would finish the job this would take him 4 extra hours. Jill's rate is 5% of what Jack would do in those 4 hours. That means it would take her ten times as much time as Jack put into the job. 5*4 equals 20, answer E.",
+  "correct": "E",
+  "choices": [
+   {
+    "label": "A",
+    "text": "4"
+   },
+   {
+    "label": "B",
+    "text": "8"
+   },
+   {
+    "label": "C",
+    "text": "22"
+   },
+   {
+    "label": "D",
+    "text": "50"
+   },
+   {
+    "label": "E",
+    "text": "20"
+   }
+  ],
+  "verified": false,
+  "topic": "work-and-rates",
+  "difficulty": 4,
+  "hints": [
+   "Jill's rate being 5% of Jack's means she needs how many times longer for the same task?",
+   "Find the time Jack would need for the remaining 1/3 (which is 4 hours).",
+   "Multiply Jack's 4 hours by 20 (since Jill works at 1/20 of his rate)."
+  ],
+  "distractor_diagnoses": {
+   "A": "Reported Jack's time for the remaining third, not Jill's.",
+   "B": "Reported the time Jack already spent on 2/3.",
+   "C": "Likely a computation slip.",
+   "E": "Used 5\u00d74 instead of 20\u00d74; correct value should be 80 hours."
+  },
+  "needs_review": true,
+  "review_note": "5% rate means Jill takes 20\u00d7 Jack's 4 hours = 80 hours, not 20; the rationale and marked answer E miscompute the factor (used 5\u00d74).",
+  "solution_steps": 1,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_test_0237",
+  "question": "At a conference, one team is made up of 4 men and 4 women. Four presenters are chosen to present the team's findings in front of the entire conference. How many different groups of presenters can be chosen from the team if a team cannot be composed of men only or women only? (Two groups of presenters are considered different if at least one presenter is different.)",
+  "options": [
+   "A)120",
+   "B)19",
+   "C)180",
+   "D)420",
+   "E)460"
+  ],
+  "rationale": "No of ways = All ways to choose - ways using just men - ways using just women = C(8,4)-C(4,4)-C(4,4) = 21 - 1 - 1 = 19\nAnswer is (B)",
+  "correct": "B",
+  "choices": [
+   {
+    "label": "A",
+    "text": "120"
+   },
+   {
+    "label": "B",
+    "text": "19"
+   },
+   {
+    "label": "C",
+    "text": "180"
+   },
+   {
+    "label": "D",
+    "text": "420"
+   },
+   {
+    "label": "E",
+    "text": "460"
+   }
+  ],
+  "verified": false,
+  "topic": "combinatorics",
+  "difficulty": 4,
+  "hints": [
+   "Count all groups of 4, then remove the disallowed single-gender groups.",
+   "Compute the total ways to pick 4 from 8 people.",
+   "Subtract the all-men and all-women groups: C(8,4) \u2212 C(4,4) \u2212 C(4,4)."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a permutation or wrong combination value.",
+   "B": "Used C(8,4)=21 instead of 70, giving 19 instead of 68.",
+   "C": "Likely a computation slip.",
+   "D": "Used ordered arrangements rather than combinations."
+  },
+  "needs_review": true,
+  "review_note": "C(8,4) equals 70, not 21, so the answer should be 70\u22121\u22121 = 68, which is not among the options; the marked answer B=19 is based on an arithmetic error.",
+  "solution_steps": 2,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_test_0245",
+  "question": "There is a 90% chance that a registered voter in Burghtown voted in the last election. If five registered voters are chosen at random, what is the approximate likelihood that exactly four of them voted in the last election?",
+  "options": [
+   "A)26.2%",
+   "B)32.8%",
+   "C)43.7%",
+   "D)59.0%",
+   "E)65.6%"
+  ],
+  "rationale": "The probability that four of five voted is :\nP(1st one voted) X ... X P(4th one voted) X (5th one NOT voted)\n= 0.9 x 0.9 x 0.9 x 0.9 x 0.1\n= 0.81 x 0.81 x 0.1 = 0.6561\nANSWER: E",
+  "correct": "E",
+  "choices": [
+   {
+    "label": "A",
+    "text": "26.2%"
+   },
+   {
+    "label": "B",
+    "text": "32.8%"
+   },
+   {
+    "label": "C",
+    "text": "43.7%"
+   },
+   {
+    "label": "D",
+    "text": "59.0%"
+   },
+   {
+    "label": "E",
+    "text": "65.6%"
+   }
+  ],
+  "verified": false,
+  "topic": "probability",
+  "difficulty": 4,
+  "hints": [
+   "Exactly four of five voting can happen in several arrangements; which non-voter could it be?",
+   "Use the binomial form: choose which 4 voted, times 0.9^4 times 0.1.",
+   "Compute C(5,4) \u00d7 0.9^4 \u00d7 0.1."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "The correct binomial value 5\u00d70.9^4\u00d70.1 \u2248 32.8%; this is actually right while E is marked.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "Exactly four requires the binomial coefficient C(5,4)=5, giving 5\u00d70.6561\u00d70.1 \u2248 32.8% (option B); the rationale omits the factor of 5, so the marked answer E (0.6561) is wrong.",
+  "solution_steps": 4,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_dev_0000",
+  "question": "Three birds are flying at a fast rate of 900 kilometers per hour. What is their speed in miles per minute? [1km = 0.6 miles]",
+  "options": [
+   "A)32400",
+   "B)6000",
+   "C)600",
+   "D)60000",
+   "E)10"
+  ],
+  "rationale": "To calculate the equivalent of miles in a kilometer\n0.6 kilometers = 1 mile\n900 kilometers = (0.6)*900 = 540 miles\nIn 1 hour there are 60 minutes\nSpeed in miles/minutes = 60 * 540 = 32400\nCorrect answer - A",
+  "correct": "A",
+  "choices": [
+   {
+    "label": "A",
+    "text": "32400"
+   },
+   {
+    "label": "B",
+    "text": "6000"
+   },
+   {
+    "label": "C",
+    "text": "600"
+   },
+   {
+    "label": "D",
+    "text": "60000"
+   },
+   {
+    "label": "E",
+    "text": "10"
+   }
+  ],
+  "verified": false,
+  "topic": "speed-time-distance",
+  "difficulty": 3,
+  "hints": [
+   "Convert the speed from km/hr to miles/hr, then change the time unit from hours to minutes.",
+   "Convert 900 km/hr to miles/hr using 1 km = 0.6 miles.",
+   "Divide the miles-per-hour figure by 60 to get miles per minute."
+  ],
+  "distractor_diagnoses": {
+   "A": "Multiplied by 60 instead of dividing; correct value is 540/60 = 9 miles per minute.",
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Closest to the true value 9 miles per minute (rounding)."
+  },
+  "needs_review": true,
+  "review_note": "Converting to miles per minute requires dividing 540 mph by 60, giving 9 miles/min, not multiplying by 60; the marked answer A (32400) is wrong and the intended value (9) isn't listed.",
+  "solution_steps": 5,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_dev_0010",
+  "question": "If a number of apples, say x, is divisible by 3 and 9, x is a multiple of which of the following values?",
+  "rationale": "The numbers are 3 and 9\n3=1*3\n9=3*3\nThe factors are 1*3*3*3\nNumber should definitely have these factors\n27 is the number which has these factors\nSo the number is a multiple of 27\nAnswer is B",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "15"
+   },
+   {
+    "label": "B",
+    "text": "27"
+   },
+   {
+    "label": "C",
+    "text": "14"
+   },
+   {
+    "label": "D",
+    "text": "12"
+   },
+   {
+    "label": "E",
+    "text": "20"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 2,
+  "hints": [
+   "What is the smallest number guaranteed to divide x if both 3 and 9 divide it?",
+   "Find the least common multiple of 3 and 9.",
+   "Since 9 already contains 3, x must be a multiple of LCM(3,9) = 9; check which option is forced."
+  ],
+  "distractor_diagnoses": {
+   "A": "Mistakenly combined 3 and a stray factor of 5.",
+   "C": "Unrelated factor not derived from 3 and 9.",
+   "D": "Used LCM with an extra factor of 4 rather than the correct 9.",
+   "E": "Unrelated factor not derived from 3 and 9."
+  },
+  "needs_review": true,
+  "review_note": "Rationale incorrectly multiplies factors of 3 and 9 to get 27; the LCM of 3 and 9 is 9, and a multiple of 9 need not be a multiple of 27, so none of the options is strictly forced and the marked key is unsound.",
+  "solution_steps": 7
+ },
+ {
+  "id": "aqua_dev_0023",
+  "question": "Lucy has enough money to go to Canada every 6 years, while Luke has enough to go every 9 years. If they pool their money, how often can they go?",
+  "rationale": "Lucy's speed = 1/6 trips per year\nLuke's speed = 1/9 trips per year\nLucy + Luke's speed= (1/6 + 1/9) = 5/18 trips per year\ncorrect option is B",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "2 times per year"
+   },
+   {
+    "label": "B",
+    "text": "once every 15 years"
+   },
+   {
+    "label": "C",
+    "text": "5 times every 18 years"
+   },
+   {
+    "label": "D",
+    "text": "15 times a year"
+   },
+   {
+    "label": "E",
+    "text": "once every 7.5 years"
+   }
+  ],
+  "verified": false,
+  "topic": "work-and-rates",
+  "difficulty": 3,
+  "hints": [
+   "Think of each person's ability to travel as a rate of trips per year that you can add.",
+   "Add the rates 1/6 and 1/9 to get their combined trips per year.",
+   "Combined rate = 1/6 + 1/9 = 5/18 trips per year, so they go 5 times every 18 years."
+  ],
+  "distractor_diagnoses": {
+   "A": "Vastly overestimated the combined rate.",
+   "B": "Added the periods or averaged years instead of adding rates.",
+   "D": "Treated the rate as 15 trips per year, a magnitude error.",
+   "E": "Averaged the two periods (6 and 9) instead of adding rates."
+  },
+  "needs_review": true,
+  "review_note": "The rationale derives a combined rate of 5/18 trips per year, which matches option C (5 times every 18 years), not the marked answer B.",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_dev_0032",
+  "question": "A car after covering 1/2 of a journey of 100 km develops engine trouble and later travels at 1/2 of its original speed. As a result, it arrives 2 hours late than its normal time. What is the normal speed of the car is?",
+  "rationale": "[50/x + 50/(x/2)] \u2013 100/x = 2\nx = 25\nAnswer:D",
+  "correct": "D",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "8"
+   },
+   {
+    "label": "B",
+    "text": "6"
+   },
+   {
+    "label": "C",
+    "text": "1"
+   },
+   {
+    "label": "D",
+    "text": "2"
+   },
+   {
+    "label": "E",
+    "text": "9"
+   }
+  ],
+  "verified": false,
+  "topic": "speed-time-distance",
+  "difficulty": 4,
+  "hints": [
+   "How does the extra time arise from driving the second half at half speed?",
+   "Write the actual time (first 50 km at x, last 50 km at x/2) minus the normal time (100 at x) equal to 2.",
+   "Solve 50/x + 50/(x/2) - 100/x = 2, which gives 50/x = 2."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip in solving for x.",
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "Solving 50/x + 50/(x/2) - 100/x = 2 gives 50/x = 2, so x = 25 km/h, but no option equals 25 and the rationale's own derived x=25 contradicts the marked answer D (2).",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_dev_0035",
+  "question": "One person has 2 children. At least one of them was a girl. Then the probability that 2 of the are girl is_____",
+  "rationale": "total possibilities are 2 (G,B) (G,G)\nprobability that of both are girls = 1/2\nANSWER:A",
+  "correct": "A",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "1/2"
+   },
+   {
+    "label": "B",
+    "text": "1/3"
+   },
+   {
+    "label": "C",
+    "text": "1/4"
+   },
+   {
+    "label": "D",
+    "text": "3/2"
+   },
+   {
+    "label": "E",
+    "text": "5/2"
+   }
+  ],
+  "verified": false,
+  "topic": "probability",
+  "difficulty": 3,
+  "hints": [
+   "List all equally likely orderings of two children before applying the condition.",
+   "Start from {BB, BG, GB, GG} and remove the outcome with no girl.",
+   "Of the remaining BG, GB, GG, how many are GG?"
+  ],
+  "distractor_diagnoses": {
+   "B": "Correctly uses 1/3 from the conditional sample space BG, GB, GG.",
+   "C": "Used unconditional probability of GG out of four outcomes.",
+   "D": "Not a valid probability value.",
+   "E": "Not a valid probability value."
+  },
+  "needs_review": true,
+  "review_note": "The standard answer is 1/3 (conditional sample space BG, GB, GG), but the rationale incorrectly collapses BG and GB into one outcome, marking 1/2; the keyed answer is wrong.",
+  "solution_steps": 2
+ },
+ {
+  "id": "aqua_dev_0068",
+  "question": "A man says that he gained 10 percent as profit in selling a suitable cloth material. He says if he had purchased the same one 10 percent cheaper than it was actual and if he had sold it for 20% profit he gets 25paise less. find at what price he sold the suit?",
+  "rationale": "Let cp = 100 then sp = 110;\nwhen cp= 90 then sp = 108;\nNow when 200p less sp = 108\nSo 25 p less, sp = 108/200*25=13.5\nANSWER:D",
+  "correct": "D",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "10.5"
+   },
+   {
+    "label": "B",
+    "text": "11.2"
+   },
+   {
+    "label": "C",
+    "text": "12.5"
+   },
+   {
+    "label": "D",
+    "text": "13.5"
+   },
+   {
+    "label": "E",
+    "text": "15.8"
+   }
+  ],
+  "verified": false,
+  "topic": "profit-and-loss",
+  "difficulty": 4,
+  "hints": [
+   "How does the selling price differ between the two scenarios when both are scaled from a common cost price?",
+   "Set CP = 100 and compute both selling prices (10% profit vs. 20% profit on a 10% cheaper cost).",
+   "Form the difference between the two selling prices and set it equal to 25 paise to scale back to actual price."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "C": "Equated cost price rather than selling price to the 25-paise difference.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "Solving CP from 0.02\u00d7CP = 0.25 gives SP \u2248 13.75, which does not exactly match the marked option D (13.5); the rationale's scaling is loosely worded.",
+  "solution_steps": 6
+ },
+ {
+  "id": "aqua_dev_0070",
+  "question": "The least possible value of |89 - 9a|, where a is an integer, is",
+  "rationale": "|89 - 9a| will have least value when a has highest possible value.\nfor a= 10 expression |89 - 9a| becomes |89 -90| = 1 which is the least possible value.\nAnswer: B",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "9"
+   },
+   {
+    "label": "B",
+    "text": "10"
+   },
+   {
+    "label": "C",
+    "text": "11"
+   },
+   {
+    "label": "D",
+    "text": "12"
+   },
+   {
+    "label": "E",
+    "text": "13"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 2,
+  "hints": [
+   "Which multiple of 9 sits closest to 89?",
+   "Test the integer a that makes 9a nearest to 89.",
+   "Evaluate |89 - 9a| for that a to get the minimum distance."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The true minimum is |89-90| = 1, which is not among the listed options (9-13), so the answer choices are broken.",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_dev_0086",
+  "question": "M is a set of even numbers from 1 to 23 and odd numbers from 24 to 100. Find no. of zeroes in the sum of all values in the set.",
+  "rationale": "We have to find no of occurrence of 5.\n10-1. 35-1. 65-1. 95-1\n20-1. 45-1. 75-2\n25-2. 55-1. 85-1\nTotal 12\nANSWER:E",
+  "correct": "E",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "8"
+   },
+   {
+    "label": "B",
+    "text": "9"
+   },
+   {
+    "label": "C",
+    "text": "10"
+   },
+   {
+    "label": "D",
+    "text": "11"
+   },
+   {
+    "label": "E",
+    "text": "12"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 4,
+  "hints": [
+   "What does the question actually require: a count of trailing zeros in one sum, or something else?",
+   "First compute the actual sum of the even numbers 2..22 and the odd numbers 25..99.",
+   "Add the two partial sums and examine how many trailing zeros the single total has."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The rationale counts factors of 5, but the actual sum (132 + 2356 = 2488) has zero trailing zeros, so the marked answer E does not match a literal reading of the question.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_dev_0091",
+  "question": "Mr. Bean chooses a number and he keeps on doubling the number followed by subtracting one from it, if he chooses 3 as initial number and he repeats the operation for 30 times then what is the final result?",
+  "rationale": "Step 1: (3 x 2) - 1 = 5 ( 2^2 + 1)\nStep 2: (5 x 2) - 1 = 9 (2^3 + 1)\nStep 3: (9 x 2) - 1 = 17 (2^4 + 1)\nStep 4: (17 x 2) - 1 = 33 (2^5 + 1)\nSo After 30 steps we have 2^31 + 1\nAns: B",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "22"
+   },
+   {
+    "label": "B",
+    "text": "77"
+   },
+   {
+    "label": "C",
+    "text": "269"
+   },
+   {
+    "label": "D",
+    "text": "279"
+   },
+   {
+    "label": "E",
+    "text": "71"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 4,
+  "hints": [
+   "After each step, how does the result relate to a power of 2?",
+   "Track the first few outputs and write each as 2^(n+1) + 1.",
+   "Generalize to 2^(31) + 1 after 30 steps and evaluate."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The derived result 2^31 + 1 is over two billion, which matches none of the small options; the marked answer B (77) is inconsistent with the rationale.",
+  "solution_steps": 6
+ },
+ {
+  "id": "aqua_dev_0095",
+  "question": "In a shipment of 120 machine parts, 5 percent were defective. In a shipment of 80 machine parts, 10 percent were defective. For the two shipments combined, what percent of the machine parts were defective?",
+  "rationale": "5% of 120 is 6\n10% of 80 is 8\nAs the question says two shipments combined, we have to add the defective as well as total shipments.\n8+6/120+80 = 15/200 = 7.5%\nAnswer C",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "6.5%"
+   },
+   {
+    "label": "B",
+    "text": "7.0%"
+   },
+   {
+    "label": "C",
+    "text": "7.5%"
+   },
+   {
+    "label": "D",
+    "text": "8.0%"
+   },
+   {
+    "label": "E",
+    "text": "8.5%"
+   }
+  ],
+  "verified": false,
+  "topic": "percentages",
+  "difficulty": 3,
+  "hints": [
+   "Why can't you just average 5% and 10% to combine the shipments?",
+   "Compute the defective count in each shipment separately.",
+   "Divide total defectives by total parts (120+80) to get the combined percentage."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "This is actually the correct value 14/200 = 7.0%.",
+   "D": "Naively averaged the two percentages rather than weighting them.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The defective total is 6+8=14, giving 14/200 = 7.0% (option B); the rationale mistakenly writes 15 and the marked answer C is incorrect.",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_dev_0103",
+  "question": "Manoj left home for the bus stop 15 minutes earlier than the usual time. It takes 10 minutes to reach the stop. He reached the stop at 8.40 AM. What time does he usually leave home for the bus stop?",
+  "rationale": "He takes 10 mins to reach at the bus station. So, he left the room at 8.30am. This time he left 15 minutes earlier, so he usually leaves home at 8.30+15=8.45am\nANSWER:D",
+  "correct": "D",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "8:30 AM"
+   },
+   {
+    "label": "B",
+    "text": "8.55 AM"
+   },
+   {
+    "label": "C",
+    "text": "8:45 PM"
+   },
+   {
+    "label": "D",
+    "text": "Data inadequate"
+   },
+   {
+    "label": "E",
+    "text": "None of these"
+   }
+  ],
+  "verified": false,
+  "topic": "ages-and-puzzles",
+  "difficulty": 2,
+  "hints": [
+   "Work backward from arrival time using the 10-minute travel time.",
+   "Subtract 10 minutes from 8:40 to find today's departure.",
+   "Add the 15 minutes he left early to today's departure to get the usual time."
+  ],
+  "distractor_diagnoses": {
+   "A": "Reported today's departure (8:30) instead of the usual time.",
+   "B": "Added time in the wrong direction.",
+   "C": "Computed 8:45 but mislabeled it as PM instead of AM.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The rationale computes 8:45 AM, but the only 8:45 option is mislabeled '8:45 PM'; the marked answer D (Data inadequate) contradicts the worked solution, making the choices broken.",
+  "solution_steps": 2
+ },
+ {
+  "id": "aqua_dev_0127",
+  "question": "A shop gives 10% discount on the purchase of an item. If paid for in cash immediately, a further discount of 12% is given. If the original price of the item is Rs. 250, what is the price of the article if a cash purchase is made?",
+  "rationale": "total discount in case of immediately paid =10%+12%=22%\nprice of article=250-250*22%=rs 195\nANSWER:C",
+  "correct": "C",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "185"
+   },
+   {
+    "label": "B",
+    "text": "190"
+   },
+   {
+    "label": "C",
+    "text": "195"
+   },
+   {
+    "label": "D",
+    "text": "200"
+   },
+   {
+    "label": "E",
+    "text": "205"
+   }
+  ],
+  "verified": false,
+  "topic": "percentages",
+  "difficulty": 3,
+  "hints": [
+   "Are two successive discounts the same as simply adding the two percentages?",
+   "Apply the 10% discount to 250 first to get the intermediate price.",
+   "Apply the 12% discount to that reduced price rather than summing the two rates."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The rationale incorrectly adds the discounts (22%) to get 195; applying them successively gives 250\u00d70.9\u00d70.88 = 198, which is not among the options, so the answer key is flawed.",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_dev_0129",
+  "question": "A loan was repaid in two annual instalments of Rs.112 each. If the rate of interest be 10% per annum compounded annually, the sum borrowed was :",
+  "rationale": "Principal = (Present value of Rs.121 due 1 year hence ) + (Present value of Rs.121 due 2 years hence )\n= Rs. 121/(1+10/100)+121/(1+10/100)2 =Rs.210\nCorrect Option: B",
+  "correct": "B",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "choices": [
+   {
+    "label": "A",
+    "text": "Rs.200"
+   },
+   {
+    "label": "B",
+    "text": "Rs.210"
+   },
+   {
+    "label": "C",
+    "text": "Rs.217.80"
+   },
+   {
+    "label": "D",
+    "text": "Rs.280"
+   },
+   {
+    "label": "E",
+    "text": "None"
+   }
+  ],
+  "verified": false,
+  "topic": "interest",
+  "difficulty": 4,
+  "hints": [
+   "How do you value future instalments in today's terms under compound interest?",
+   "Discount each instalment back to the present using the 10% rate.",
+   "Sum the present values of the two instalments (one and two years out) to get the principal."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The question states instalments of Rs.112 but the rationale discounts Rs.121; with the stated 112 the principal is about Rs.194, so the text and answer key are inconsistent.",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_dev_0136",
+  "question": "In a village, there are four tribes located at different distances from each other. Tribe R is 60 miles away from Tribe P; Tribe S 40 miles away from Tribe B and Tribe R is 10 miles nearer to the Tribe S than it is to Tribe Q.\nHow far is the Tribe S located from the tribe P ?",
+  "options": [
+   "A)20",
+   "B)22",
+   "C)34",
+   "D)25",
+   "E)55"
+  ],
+  "rationale": "Distance between Tribe Q and Tribe S = 40km\n=> Distance between Tribe Q and Tribe R + Distance between Tribe R and Tribe S = 40km\n=> Distance between Tribe Q and Tribe R + (Distance between Tribe Q and Tribe R - 10) = 40 km\n=> 2 * Distance between Tribe Q and Tribe R = 50km\n=> Distance between Tribe Q and Tribe R = 25km",
+  "correct": "D",
+  "choices": [
+   {
+    "label": "A",
+    "text": "20"
+   },
+   {
+    "label": "B",
+    "text": "22"
+   },
+   {
+    "label": "C",
+    "text": "34"
+   },
+   {
+    "label": "D",
+    "text": "25"
+   },
+   {
+    "label": "E",
+    "text": "55"
+   }
+  ],
+  "verified": false,
+  "topic": "directions-and-distance",
+  "difficulty": 4,
+  "hints": [
+   "Which two tribe-to-tribe distances differ by exactly 10 miles, and what total do they sum to?",
+   "Express the R-to-S distance as the R-to-Q distance minus 10.",
+   "Set (RQ) + (RQ - 10) = 40 and solve for the unknown distance."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "E": "Added rather than combined the two related distances."
+  },
+  "needs_review": true,
+  "review_note": "Question text uses tribes P, R, S, B, Q inconsistently and asks for S-to-P distance, but the rationale solves for Q-to-R distance; the data are garbled and do not determine S-to-P.",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "solution_steps": 5
+ },
+ {
+  "id": "aqua_dev_0137",
+  "question": "A 2 metre broad pathway is to be constructed around a rectangular plot on the inside. The area of the plots is 96 sq.m. The rate of construction is Rs. 50 per square metre. Find the total cost of the construction?",
+  "options": [
+   "A)28",
+   "B)20",
+   "C)99",
+   "D)88",
+   "E)11"
+  ],
+  "rationale": "Let the cost price = Rs 100\nthen, Marked price = Rs 135\nRequired gain = 8%,\nSo Selling price = Rs 108\nDiscount = 135 - 108 = 27\nDiscount% = (27/135)*100 = 20%\nAnswer: B) 20%",
+  "correct": "B",
+  "choices": [
+   {
+    "label": "A",
+    "text": "28"
+   },
+   {
+    "label": "B",
+    "text": "20"
+   },
+   {
+    "label": "C",
+    "text": "99"
+   },
+   {
+    "label": "D",
+    "text": "88"
+   },
+   {
+    "label": "E",
+    "text": "11"
+   }
+  ],
+  "verified": false,
+  "topic": "geometry",
+  "difficulty": 4,
+  "hints": [
+   "What dimensions of the inner pathway region can you pin down from just the plot area?",
+   "Express the pathway area as the plot area minus the inner rectangle area.",
+   "Multiply the pathway area by the Rs. 50 per square metre rate to get the cost."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The rationale is for an unrelated profit-discount problem and does not solve the pathway-cost question; the question also lacks the plot dimensions needed to determine the pathway area.",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "solution_steps": 7
+ },
+ {
+  "id": "aqua_dev_0140",
+  "question": "Bill owns a large collection of fishing lures consisting of small, medium, and large lures that weigh 3, 4, and 5 grams each, respectively. If the product of the lure weights that Bill sold to his friend is 216,000 grams, how many medium lures did he sell?",
+  "options": [
+   "A)6",
+   "B)5",
+   "C)4",
+   "D)3",
+   "E)2"
+  ],
+  "rationale": "first step:\n216,000 = 216 * 1000\n1000 = 10^3 or 5^3 * 2^3.\n216 = 2 * 108 = 2*2* 54\n54 = 2*27 = 2*3^3.\ntotal, we have:\n2^3(from 1000) * 5^3(from 1000) * 2^3(from 216) * 3^3(from 2016)\ncombine:\n2^6 * 5^3 * 3^3\nwe can rewrite 2^6 as 4^3.\nsince we are asked for the exponent for 4,\nANSWER:C",
+  "correct": "C",
+  "choices": [
+   {
+    "label": "A",
+    "text": "6"
+   },
+   {
+    "label": "B",
+    "text": "5"
+   },
+   {
+    "label": "C",
+    "text": "4"
+   },
+   {
+    "label": "D",
+    "text": "3"
+   },
+   {
+    "label": "E",
+    "text": "2"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 4,
+  "hints": [
+   "What does the prime factorization of 216,000 tell you about how many lures of each weight were sold?",
+   "Factor 216,000 into powers of 2, 3, and 5.",
+   "Rewrite 2^6 as 4^3 so the exponent of 4 gives the count of 4-gram (medium) lures."
+  ],
+  "distractor_diagnoses": {
+   "A": "Reported the exponent of 2 (six) rather than of 4.",
+   "B": "Likely a computation slip in combining the powers of 2.",
+   "C": "Miscounted the exponent of 4 as 4 instead of 3.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The factorization gives 2^6 = 4^3, so there are 3 medium lures (D), but the answer key marks C (4); the marked answer is inconsistent with the rationale.",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "solution_steps": 14
+ },
+ {
+  "id": "aqua_dev_0174",
+  "question": "Some students arranged picnic. The budget was Rs. 240. Because four students of the group failed to go, the cost to each student was increased by Rs.5. How many students went for the picnic?",
+  "options": [
+   "A)12",
+   "B)13",
+   "C)14",
+   "D)15",
+   "E)16"
+  ],
+  "rationale": "Let x = Total number of students\nAnd x-4 = Number of students went for picnic.\nSo initial cost per student = Rs. 240 /x\n4 of students are failed to go, now cost per student = Rs.240 /(x-4)\nNow, [240 / (x-4)] - [240 /x] = 5\n240/(x-4) = (240+5x)/x\nBy solving this, we get\n(x-16)(x+12)=0\nSo, x=16 or x=-12. x cannot be negative.\nSo, No. of students, X = 16\nANSWER:E",
+  "correct": "E",
+  "choices": [
+   {
+    "label": "A",
+    "text": "12"
+   },
+   {
+    "label": "B",
+    "text": "13"
+   },
+   {
+    "label": "C",
+    "text": "14"
+   },
+   {
+    "label": "D",
+    "text": "15"
+   },
+   {
+    "label": "E",
+    "text": "16"
+   }
+  ],
+  "verified": false,
+  "topic": "algebra",
+  "difficulty": 4,
+  "hints": [
+   "How does the per-student cost change when fewer people split the same fixed budget?",
+   "Write the cost per student before (240/x) and after (240/(x-4)) the four drop out.",
+   "Set 240/(x-4) - 240/x = 5 and solve the resulting quadratic for x."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip in the quadratic.",
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The solved value x = 16 is the original number of students, but the question asks how many actually went (x - 4 = 12); the marked answer E refers to the wrong quantity.",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "solution_steps": 11
+ },
+ {
+  "id": "aqua_dev_0182",
+  "question": "Last year Joe grew 2 inch and Sally grew 200 percent more than Joe grew. How many inches did Sally grow last year?",
+  "options": [
+   "A)0",
+   "B)1",
+   "C)2",
+   "D)3",
+   "E)4"
+  ],
+  "rationale": "Sally grows 200 % more than Joe grew. Joe grew 2 inch.\nSally grew (200/100)*1 = 4 inches.\nE is the answer.",
+  "correct": "E",
+  "choices": [
+   {
+    "label": "A",
+    "text": "0"
+   },
+   {
+    "label": "B",
+    "text": "1"
+   },
+   {
+    "label": "C",
+    "text": "2"
+   },
+   {
+    "label": "D",
+    "text": "3"
+   },
+   {
+    "label": "E",
+    "text": "4"
+   }
+  ],
+  "verified": false,
+  "topic": "percentages",
+  "difficulty": 3,
+  "hints": [
+   "Does '200 percent more' mean two times Joe's growth, or Joe's growth plus two times it?",
+   "Compute 200% of Joe's 2 inches as the extra amount.",
+   "Add that extra (200% of 2) on top of Joe's original 2 inches."
+  ],
+  "distractor_diagnoses": {
+   "A": "Likely a computation slip.",
+   "B": "Likely a computation slip.",
+   "C": "Interpreted '200% more' as just equal to Joe's growth.",
+   "D": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "'200% more than 2 inches' should be 2 + 2*2 = 6 inches, but the rationale computes 4 and the option list maxes at 4, so the marked answer is mathematically incorrect.",
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)",
+  "solution_steps": 3
+ },
+ {
+  "id": "aqua_dev_0201",
+  "question": "If the area of a square region having sides of length 6 centimeters is equal to the area of a rectangular region having width 2 centimeters, then the length of the rectangle, in centimeters, is",
+  "options": [
+   "A)16",
+   "B)9.5",
+   "C)9.6",
+   "D)10.5",
+   "E)14.4"
+  ],
+  "rationale": "6^2=2 * x\nx=36/2=16\nAns is A.",
+  "correct": "A",
+  "choices": [
+   {
+    "label": "A",
+    "text": "16"
+   },
+   {
+    "label": "B",
+    "text": "9.5"
+   },
+   {
+    "label": "C",
+    "text": "9.6"
+   },
+   {
+    "label": "D",
+    "text": "10.5"
+   },
+   {
+    "label": "E",
+    "text": "14.4"
+   }
+  ],
+  "verified": false,
+  "topic": "geometry",
+  "difficulty": 2,
+  "hints": [
+   "What must be true about the two areas, and how does that connect the square's side to the rectangle's dimensions?",
+   "Compute the square's area, then set it equal to width times length of the rectangle.",
+   "Solve 6^2 = 2 * x for x."
+  ],
+  "distractor_diagnoses": {
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The rationale states 36/2 = 16, which is wrong arithmetic; 36/2 = 18, and 18 is not among the options, so the marked answer A is incorrect.",
+  "solution_steps": 3,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_dev_0203",
+  "question": "Of a certain high school graduating class, 25 percent of the students continued their formal education, and 50 percent of those who continued their formal education went to four-year colleges. If 100 students in the class went to four-year colleges, how many students were in the graduating class?",
+  "options": [
+   "A)500",
+   "B)375",
+   "C)240",
+   "D)225",
+   "E)180"
+  ],
+  "rationale": "30 students went to a 4-year colleges.\nThis was 50 % of all those who continued their formal education, after completing graduation.\n=> 60 students continued their formal education, after completing graduation.\nAnd, this was 25 % of total students in graduaction class.\n=> 240 total students in graduation class.\nAnswer C",
+  "correct": "C",
+  "choices": [
+   {
+    "label": "A",
+    "text": "500"
+   },
+   {
+    "label": "B",
+    "text": "375"
+   },
+   {
+    "label": "C",
+    "text": "240"
+   },
+   {
+    "label": "D",
+    "text": "225"
+   },
+   {
+    "label": "E",
+    "text": "180"
+   }
+  ],
+  "verified": false,
+  "topic": "percentages",
+  "difficulty": 3,
+  "hints": [
+   "Work backward from the 100 students at four-year colleges through each percentage stage.",
+   "Find how many continued their education: 100 is 50% of that group.",
+   "That group is 25% of the class, so divide it by 0.25 to get the class size."
+  ],
+  "distractor_diagnoses": {
+   "A": "This is the correct value (100/0.5/0.25 = 800), but it is not among the options; A is the largest listed.",
+   "B": "Likely a computation slip in chaining the percentages.",
+   "D": "Likely a computation slip.",
+   "E": "Applied only one of the two percentage steps."
+  },
+  "needs_review": true,
+  "review_note": "Using the stated 100 four-year-college students, the class size should be 100/0.5/0.25 = 800, which is not an option; the rationale instead uses 30 and reaches 240, so the marked answer is inconsistent with the problem.",
+  "solution_steps": 4,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_dev_0249",
+  "question": "A man had 43 sheep. he wanted to divide them equally among his 6 children. How many sheep shall he keep to himself, so as to equally divide remaining sheep among his 6 children?",
+  "options": [
+   "A)7",
+   "B)5",
+   "C)4",
+   "D)2",
+   "E)8"
+  ],
+  "rationale": "Since he has 43 sheep and 6 children. The nearest number divisible by 6 is 42. So he would keep 1 sheep for himself and give 7 sheep to each child. So option A is correct.",
+  "correct": "A",
+  "choices": [
+   {
+    "label": "A",
+    "text": "7"
+   },
+   {
+    "label": "B",
+    "text": "5"
+   },
+   {
+    "label": "C",
+    "text": "4"
+   },
+   {
+    "label": "D",
+    "text": "2"
+   },
+   {
+    "label": "E",
+    "text": "8"
+   }
+  ],
+  "verified": false,
+  "topic": "number-properties",
+  "difficulty": 2,
+  "hints": [
+   "What is the largest multiple of 6 that does not exceed 43?",
+   "Find the remainder when 43 is divided by 6.",
+   "The leftover (43 mod 6) is what he keeps; each child gets the quotient."
+  ],
+  "distractor_diagnoses": {
+   "B": "Likely a computation slip.",
+   "C": "Likely a computation slip.",
+   "D": "Likely a computation slip.",
+   "E": "Likely a computation slip."
+  },
+  "needs_review": true,
+  "review_note": "The question asks how many sheep the man keeps (the remainder, 1), but the marked answer A=7 reports the sheep per child instead; the intended quantity (1) is not among the options.",
+  "solution_steps": 1,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ },
+ {
+  "id": "aqua_dev_0253",
+  "question": "In a end-of-season sale, the prices at a store have been cut to 90%. How many dollars would a $50 item cost?",
+  "options": [
+   "A)$5",
+   "B)$10",
+   "C)$21",
+   "D)$20",
+   "E)None of these"
+  ],
+  "rationale": "Actual Cost of the item is $50\n80% cut off on cost of the item = $50*90/100= $45\nSo, Actual cost minus cut off percentage cost = $50- $45= $5\nAnswer A",
+  "correct": "A",
+  "choices": [
+   {
+    "label": "A",
+    "text": "$5"
+   },
+   {
+    "label": "B",
+    "text": "$10"
+   },
+   {
+    "label": "C",
+    "text": "$21"
+   },
+   {
+    "label": "D",
+    "text": "$20"
+   },
+   {
+    "label": "E",
+    "text": "None of these"
+   }
+  ],
+  "verified": true,
+  "topic": "percentages",
+  "difficulty": 2,
+  "hints": [
+   "Does 'cut by 90%' mean you pay 90% of the price or only 10% of it?",
+   "Interpret the 90% as the discount taken off the original $50.",
+   "Compute the discount $50 x 0.90, then subtract it from $50 to get the price paid."
+  ],
+  "distractor_diagnoses": {
+   "B": "Took 10% off (paid 90%) but mis-scaled the remainder.",
+   "C": "Likely a computation slip.",
+   "D": "Interpreted 'cut to 90%' as paying 90% and mis-computed, or applied a different discount.",
+   "E": "Rejected the intended value due to the ambiguous wording."
+  },
+  "needs_review": true,
+  "review_note": "The phrase 'cut to 90%' is ambiguous: read literally it means the price becomes 90% ($45), but the rationale treats it as a 90% discount yielding $5, so the wording is unclear.",
+  "solution_steps": 4,
+  "exam": "GMAT/GRE Quantitative",
+  "source": "AQuA-RAT (Apache 2.0)"
+ }
+]

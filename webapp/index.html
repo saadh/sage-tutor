@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sage — Adaptive GMAT/GRE Tutor (Prototype)</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --card: #ffffff; --ink: #1a1a18; --muted: #8a8782;
+    --accent: #2f6f4f; --accent-soft: #e8f2ec; --wrong: #b4452f; --wrong-soft: #faeae6;
+    --gold: #c9a227; --border: #e7e4de; --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--ink); min-height: 100vh;
+    display: flex; justify-content: center; padding: 40px 20px;
+  }
+  .app { width: 100%; max-width: 680px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; margin-bottom: 28px; }
+  .brand h1 { font-size: 22px; letter-spacing: -0.4px; }
+  .brand .leaf { color: var(--accent); }
+  .brand span.tag { color: var(--muted); font-size: 13px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  h2 { font-size: 18px; margin-bottom: 6px; letter-spacing: -0.2px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .mode-btn {
+    border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--card);
+    padding: 18px 16px; text-align: left; cursor: pointer; transition: all .15s;
+    font-family: inherit; font-size: 14px;
+  }
+  .mode-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .mode-btn.active { border-color: var(--accent); background: var(--accent-soft); }
+  .mode-btn b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .mode-btn small { color: var(--muted); line-height: 1.4; display: block; }
+  select {
+    width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border);
+    font-family: inherit; font-size: 14px; background: var(--card); margin-bottom: 18px;
+    appearance: none; -webkit-appearance: none; cursor: pointer;
+  }
+  .primary {
+    width: 100%; padding: 14px; border: none; border-radius: 10px; background: var(--accent);
+    color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: opacity .15s;
+  }
+  .primary:hover { opacity: .92; }
+  .primary:disabled { opacity: .4; cursor: default; }
+  /* mastery map */
+  .mastery { margin-top: 22px; }
+  .mastery h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 12px; }
+  .topic-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13.5px; }
+  .topic-row .name { width: 200px; }
+  .bar { flex: 1; height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s; }
+  .topic-row .pct { width: 70px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .empty-note { color: var(--muted); font-size: 13.5px; font-style: italic; }
+  /* session header */
+  .session-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .progress { flex: 1; height: 6px; background: var(--border); border-radius: 4px; margin: 0 16px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+  .qcount, .timer { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .timer.warn { color: var(--wrong); font-weight: 600; }
+  .meta { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .chip {
+    font-size: 12px; padding: 4px 11px; border-radius: 99px; background: var(--accent-soft);
+    color: var(--accent); font-weight: 600;
+  }
+  .dots { display: inline-flex; gap: 3px; align-items: center; }
+  .dots b { font-size: 11px; color: var(--muted); font-weight: 500; margin-right: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .dot.on { background: var(--gold); }
+  .qtext { font-size: 16.5px; line-height: 1.6; margin-bottom: 22px; white-space: pre-line; }
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice {
+    display: flex; gap: 12px; align-items: baseline; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 13px 16px; cursor: pointer; font-size: 14.5px;
+    background: var(--card); transition: all .12s; text-align: left; font-family: inherit; width: 100%;
+  }
+  .choice:hover:not(:disabled) { border-color: var(--accent); }
+  .choice .lab { font-weight: 700; color: var(--muted); min-width: 18px; }
+  .choice.picked { border-color: var(--ink); background: #f1efea; }
+  .choice.correct { border-color: var(--accent); background: var(--accent-soft); }
+  .choice.correct .lab { color: var(--accent); }
+  .choice.incorrect { border-color: var(--wrong); background: var(--wrong-soft); }
+  .choice.incorrect .lab { color: var(--wrong); }
+  .choice:disabled { cursor: default; }
+  .feedback { margin-top: 20px; border-radius: 10px; padding: 16px 18px; font-size: 14px; line-height: 1.6; }
+  .feedback.good { background: var(--accent-soft); border: 1px solid #cfe3d8; }
+  .feedback.bad { background: var(--wrong-soft); border: 1px solid #efd4cc; }
+  .feedback b.verdict { display: block; font-size: 14.5px; margin-bottom: 6px; }
+  .feedback .rationale { color: #444; white-space: pre-line; margin-top: 8px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,.12); }
+  .adapt-note {
+    margin-top: 12px; font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: center;
+    background: #fdf8ec; border: 1px solid #f0e4c0; padding: 10px 14px; border-radius: 9px;
+  }
+  .nav { margin-top: 20px; display: flex; justify-content: flex-end; }
+  .nav .primary { width: auto; padding: 12px 28px; }
+  /* summary */
+  .score-line { display: flex; align-items: baseline; gap: 12px; margin: 8px 0 20px; }
+  .score-line .big { font-size: 42px; font-weight: 700; letter-spacing: -1px; }
+  .score-line .lbl { color: var(--muted); font-size: 14px; }
+  .traj { display: flex; gap: 5px; align-items: flex-end; height: 64px; margin: 14px 0 6px; }
+  .traj .tbar { flex: 1; border-radius: 4px 4px 0 0; min-height: 8px; position: relative; }
+  .traj .tbar.c { background: var(--accent); } .traj .tbar.w { background: var(--wrong); }
+  .traj-lbl { font-size: 11.5px; color: var(--muted); margin-bottom: 18px; }
+  .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; font-size: 13.5px; margin-bottom: 20px; }
+  .sum-grid div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .sum-grid span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .episode {
+    background: #f4f1ff; border: 1px solid #e2dcf5; border-radius: 10px; padding: 14px 16px;
+    font-size: 13px; line-height: 1.6; color: #4a4470; margin-bottom: 20px;
+  }
+  .episode b { display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .7px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <h1><span class="leaf">●</span> Sage</h1>
+    <span class="tag">the tutor that never forgets you — prototype</span>
+  </div>
+  <div class="card" id="view"></div>
+  <footer>50-question sample · AQuA-RAT (Apache 2.0) · adaptivity: 2-up/2-down staircase · mastery persists in this browser</footer>
+</div>
+
+<script>
+const SESSION_LEN = 10;
+const SOFT_LIMIT = 120;            // seconds before pacing warning
+const EXCLUDE = new Set(["aqua_test_0010"]);  // failed answer-verification (rationale uses 450 vs question's 420)
+
+let QUESTIONS = [];
+let mastery = JSON.parse(localStorage.getItem("sage_mastery") || "{}");
+let sessionCount = parseInt(localStorage.getItem("sage_sessions") || "0");
+let S = null;                      // current session state
+let timerInt = null, qStart = null;
+
+const $ = sel => document.querySelector(sel);
+const view = () => $("#view");
+const save = () => { localStorage.setItem("sage_mastery", JSON.stringify(mastery)); localStorage.setItem("sage_sessions", sessionCount); };
+const cleanChoice = t => t.replace(/^[A-E]\)\s*/, "");
+const topicName = t => t.replace(/-/g, " ");
+const acc = m => m.attempts ? m.correct / m.attempts : null;
+
+fetch("questions_sample.json").then(r => r.json()).then(data => {
+  QUESTIONS = data.filter(q => !EXCLUDE.has(q.id));
+  renderHome();
+});
+
+/* ---------- HOME ---------- */
+function renderHome() {
+  const topics = [...new Set(QUESTIONS.map(q => q.topic))].sort();
+  const rows = Object.entries(mastery)
+    .sort((a, b) => acc(a[1]) - acc(b[1]))
+    .map(([t, m]) => {
+      const a = Math.round(acc(m) * 100);
+      return `<div class="topic-row"><span class="name">${topicName(t)}</span>
+        <span class="bar"><i style="width:${a}%"></i></span>
+        <span class="pct">${a}% · ${m.attempts}q</span></div>`;
+    }).join("");
+  view().innerHTML = `
+    <h2>Start a practice sprint</h2>
+    <p class="sub">10 adaptive questions. Difficulty rises after 2 straight correct, eases after 2 straight misses. Take your time — the timer is a pacing signal, not a deadline.</p>
+    <div class="modes">
+      <button class="mode-btn active" id="m-mixed" onclick="setMode('mixed')">
+        <b>Mixed review</b><small>Interleaved topics, weighted toward your weak spots</small>
+      </button>
+      <button class="mode-btn" id="m-focus" onclick="setMode('focus')">
+        <b>Focus topic</b><small>Drill one topic, staircase difficulty within it</small>
+      </button>
+    </div>
+    <select id="topic-sel" style="display:none">
+      ${topics.map(t => `<option value="${t}">${topicName(t)}</option>`).join("")}
+    </select>
+    <button class="primary" onclick="startSession()">Begin session ${sessionCount + 1} →</button>
+    <div class="mastery">
+      <h3>Your mastery map</h3>
+      ${rows || '<p class="empty-note">No attempts yet — your map builds as you practice. (In the full build this lives in Butterbase + XTrace, not your browser.)</p>'}
+    </div>`;
+  window._mode = "mixed";
+}
+function setMode(m) {
+  window._mode = m;
+  $("#m-mixed").classList.toggle("active", m === "mixed");
+  $("#m-focus").classList.toggle("active", m === "focus");
+  $("#topic-sel").style.display = m === "focus" ? "block" : "none";
+}
+
+/* ---------- ADAPTIVE ENGINE ---------- */
+function topicLevel(t) {
+  const m = mastery[t];
+  if (!m || !m.attempts) return 2;                       // default entry level
+  return Math.max(1, Math.min(5, Math.round(m.level)));
+}
+function pickTopic() {
+  if (S.mode === "focus") return S.focusTopic;
+  // weight topics: unseen first, then lowest accuracy; avoid repeating last topic
+  const topics = [...new Set(S.pool.map(q => q.topic))].filter(t => t !== S.lastTopic || topics?.length === 1);
+  const unseen = topics.filter(t => !mastery[t]);
+  if (unseen.length && Math.random() < 0.5) return unseen[Math.floor(Math.random() * unseen.length)];
+  const scored = topics.map(t => ({ t, a: mastery[t] ? acc(mastery[t]) : 0.5 }));
+  scored.sort((x, y) => x.a - y.a);
+  const k = Math.min(scored.length, 3);                  // pick among 3 weakest
+  return scored[Math.floor(Math.random() * k)].t;
+}
+function pickQuestion() {
+  const topic = pickTopic();
+  const want = S.difficulty;
+  // widen search: exact topic+diff → topic ±1 diff → topic any → any topic at diff → anything left
+  const tries = [
+    q => q.topic === topic && q.difficulty === want,
+    q => q.topic === topic && Math.abs(q.difficulty - want) === 1,
+    q => q.topic === topic,
+    q => q.difficulty === want,
+    q => true,
+  ];
+  for (const f of tries) {
+    const c = S.pool.filter(f);
+    if (c.length) {
+      const q = c[Math.floor(Math.random() * c.length)];
+      S.pool = S.pool.filter(x => x.id !== q.id);
+      S.lastTopic = q.topic;
+      return q;
+    }
+  }
+  return null;
+}
+function recordAnswer(q, pickedLabel, secs) {
+  const correct = pickedLabel === q.correct;
+  const m = mastery[q.topic] || { attempts: 0, correct: 0, level: 2 };
+  m.attempts++; if (correct) m.correct++;
+  // nudge per-topic level toward question difficulty on success, below it on failure
+  m.level = m.level + 0.3 * ((correct ? q.difficulty + 0.5 : q.difficulty - 1) - m.level);
+  mastery[q.topic] = m;
+
+  let adaptNote = null;
+  if (correct) {
+    S.missStreak = 0; S.streak++;
+    if (S.streak >= 2 && S.difficulty < 5) {
+      S.difficulty++; S.streak = 0;
+      adaptNote = `Two in a row — stepping difficulty up to ${S.difficulty}/5.`;
+    }
+  } else {
+    S.streak = 0; S.missStreak++;
+    if (S.missStreak >= 2) {
+      if (S.difficulty > 1) {
+        S.difficulty--; adaptNote = `Two misses in a row — easing difficulty to ${S.difficulty}/5. Read the walkthrough below, the next one is more approachable.`;
+      } else {
+        adaptNote = `This looks like a concept gap in ${topicName(q.topic)}, not a difficulty problem — flagged for instruction. (In the full build, this fact is written to XTrace and routed to your teacher.)`;
+      }
+      S.missStreak = 0;
+    }
+  }
+  S.history.push({ q, correct, secs, difficulty: q.difficulty });
+  save();
+  return { correct, adaptNote };
+}
+
+/* ---------- SESSION FLOW ---------- */
+function startSession() {
+  S = {
+    mode: window._mode,
+    focusTopic: window._mode === "focus" ? $("#topic-sel").value : null,
+    difficulty: window._mode === "focus" ? topicLevel($("#topic-sel").value) : 2,
+    streak: 0, missStreak: 0, history: [], lastTopic: null,
+    pool: [...QUESTIONS],
+  };
+  nextQuestion();
+}
+function nextQuestion() {
+  if (S.history.length >= SESSION_LEN || !S.pool.length) return renderSummary();
+  const q = pickQuestion();
+  if (!q) return renderSummary();
+  S.current = q;
+  renderQuestion(q);
+  qStart = Date.now();
+  clearInterval(timerInt);
+  timerInt = setInterval(() => {
+    const s = Math.floor((Date.now() - qStart) / 1000);
+    const el = $("#timer"); if (!el) return clearInterval(timerInt);
+    el.textContent = `${String(Math.floor(s / 60)).padStart(1)}:${String(s % 60).padStart(2, "0")}`;
+    if (s >= SOFT_LIMIT) { el.classList.add("warn"); el.textContent += " · pace"; }
+  }, 1000);
+}
+function renderQuestion(q) {
+  const n = S.history.length + 1;
+  view().innerHTML = `
+    <div class="session-top">
+      <span class="qcount">Q ${n} / ${SESSION_LEN}</span>
+      <span class="progress"><i style="width:${((n - 1) / SESSION_LEN) * 100}%"></i></span>
+      <span class="timer" id="timer">0:00</span>
+    </div>
+    <div class="meta">
+      <span class="chip">${topicName(q.topic)}</span>
+      <span class="dots"><b>difficulty</b>${[1,2,3,4,5].map(i => `<span class="dot ${i <= q.difficulty ? "on" : ""}"></span>`).join("")}</span>
+    </div>
+    <p class="qtext">${q.question}</p>
+    <div class="choices">
+      ${q.choices.map(c => `<button class="choice" data-label="${c.label}" onclick="answer('${c.label}')">
+        <span class="lab">${c.label}</span><span>${cleanChoice(c.text)}</span></button>`).join("")}
+    </div>
+    <div id="fb"></div>
+    <div class="nav" id="nav"></div>`;
+}
+function answer(label) {
+  clearInterval(timerInt);
+  const secs = Math.round((Date.now() - qStart) / 1000);
+  const q = S.current;
+  const { correct, adaptNote } = recordAnswer(q, label, secs);
+  document.querySelectorAll(".choice").forEach(btn => {
+    btn.disabled = true;
+    const l = btn.dataset.label;
+    if (l === q.correct) btn.classList.add("correct");
+    else if (l === label) btn.classList.add(correct ? "correct" : "incorrect");
+  });
+  const last = S.history.length >= SESSION_LEN;
+  $("#fb").innerHTML = `
+    <div class="feedback ${correct ? "good" : "bad"}">
+      <b class="verdict">${correct ? `Correct — in ${secs}s.` : `Not quite. The answer is ${q.correct}.`}</b>
+      ${correct && secs <= 90 ? "Solid pace for test day." : ""}
+      ${!correct || secs > SOFT_LIMIT ? `<div class="rationale">${q.rationale}</div>` : ""}
+    </div>
+    ${adaptNote ? `<div class="adapt-note">⚖️ ${adaptNote}</div>` : ""}`;
+  $("#nav").innerHTML = `<button class="primary" onclick="nextQuestion()">${last ? "Finish session →" : "Next question →"}</button>`;
+}
+
+/* ---------- SUMMARY ---------- */
+function renderSummary() {
+  clearInterval(timerInt);
+  sessionCount++; save();
+  const h = S.history;
+  const nCorrect = h.filter(x => x.correct).length;
+  const avgT = Math.round(h.reduce((a, x) => a + x.secs, 0) / h.length);
+  const byTopic = {};
+  h.forEach(x => {
+    const t = byTopic[x.q.topic] || { c: 0, n: 0 };
+    t.n++; if (x.correct) t.c++; byTopic[x.q.topic] = t;
+  });
+  const strengths = Object.entries(byTopic).filter(([, v]) => v.c === v.n && v.n > 0).map(([t]) => topicName(t));
+  const gaps = Object.entries(byTopic).filter(([, v]) => v.c < v.n).map(([t]) => topicName(t));
+  view().innerHTML = `
+    <h2>Session ${sessionCount} complete</h2>
+    <div class="score-line"><span class="big">${nCorrect}/${h.length}</span>
+      <span class="lbl">correct · avg ${avgT}s per question · peak difficulty ${Math.max(...h.map(x => x.difficulty))}/5</span></div>
+    <div class="traj">
+      ${h.map(x => `<span class="tbar ${x.correct ? "c" : "w"}" style="height:${x.difficulty * 20}%" title="d${x.difficulty} ${x.correct ? "✓" : "✗"}"></span>`).join("")}
+    </div>
+    <p class="traj-lbl">Difficulty trajectory (bar height = level, green = correct)</p>
+    <div class="sum-grid">
+      ${Object.entries(byTopic).map(([t, v]) => `<div><span>${topicName(t)}</span><span>${v.c}/${v.n}</span></div>`).join("")}
+    </div>
+    <div class="episode">
+      <b>→ what becomes an XTrace episode</b>
+      “Session ${sessionCount} (${S.mode}${S.focusTopic ? ": " + topicName(S.focusTopic) : ""}): scored ${nCorrect}/${h.length}, avg ${avgT}s/q.
+      ${strengths.length ? "Strengths: " + strengths.join(", ") + "." : ""}
+      ${gaps.length ? "Gaps: " + gaps.join(", ") + "." : "No gaps this session."}
+      Resume at difficulty ${S.difficulty}/5.”
+    </div>
+    <button class="primary" onclick="renderHome()">Back to home →</button>`;
+}
+</script>
+</body>
+</html>
