@@ -117,11 +117,38 @@ async function bget(path) { const r = await fetch(API + path); if (!r.ok) throw 
 async function bpost(path, body) { const r = await fetch(API + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); return r.ok ? r.json() : null; }
 async function bpatch(path, body) { return fetch(API + path, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); }
 
+/* ---------- web-only start (no iMessage required) ---------- */
+function renderStartCard(reason) {
+  $("#quiz").innerHTML = `
+    <h2>Start a practice sprint</h2>
+    <p style="color:var(--muted);font-size:13.5px;margin:6px 0 16px">${reason} Ten adaptive questions — Sage remembers you by phone number across sessions.</p>
+    <input id="wphone" placeholder="Phone number (your Sage identity, e.g. +15551234567)" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;margin-bottom:10px">
+    <button class="primary" style="width:100%" onclick="webStart()">Begin sprint →</button>`;
+}
+async function webStart() {
+  const phone = ($("#wphone").value.trim() || `web-guest-${Math.random().toString(36).slice(2, 8)}`).replace(/[^0-9a-z+\-]/gi, "");
+  $("#quiz").innerHTML = `<p style="color:var(--muted)">Setting up your sprint…</p>`;
+  // get-or-create the student, then open a session — all straight to Butterbase
+  let user = (await bget(`/users?phone=eq.${encodeURIComponent(phone)}&limit=1`))[0];
+  if (!user) user = await bpost("/users", { phone, verified_at: new Date().toISOString() });
+  if (!user?.id) { $("#quiz").innerHTML = "<p>Could not create your account — try again.</p>"; return; }
+  const tok = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join("");
+  const sess = await bpost("/sessions", { user_id: user.id, mode: "sprint", state: "in_question", web_token: tok });
+  if (!sess?.id) { $("#quiz").innerHTML = "<p>Could not open a session — try again.</p>"; return; }
+  history.replaceState(null, "", `?token=${tok}`); // refresh-safe
+  session = sess;
+  await hydrate();
+}
+
 async function boot() {
-  if (!token) { $("#quiz").innerHTML = "<p>Missing session token. Text Sage \"help\" to get your link.</p>"; return; }
+  if (!token) return renderStartCard("No iMessage needed —");
   const sess = await bget(`/sessions?web_token=eq.${encodeURIComponent(token)}&limit=1`);
-  if (!sess.length) { $("#quiz").innerHTML = "<p>Session not found. Text Sage \"help\" for a fresh link.</p>"; return; }
+  if (!sess.length) return renderStartCard("That session link expired.");
   session = sess[0];
+  await hydrate();
+}
+
+async function hydrate() {
   $("#sid").textContent = session.id.slice(0, 8) + "…";
 
   const settingsRows = await bget(`/settings?select=name,value&limit=100`);
