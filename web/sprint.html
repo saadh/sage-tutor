@@ -332,6 +332,10 @@ async function askSage(mode, userText = null, diagnosis = null) {
     // a JWT lasts an hour, so login once and reuse across answers AND reloads.
     let jwt = localStorage.getItem("sage_demo_jwt");
     if (jwt) return jwt;
+    // INTENTIONAL public demo credential (gitguardian:ignore) — a throwaway
+    // Butterbase end-user whose only extra capability over anonymous is
+    // invoking the tutor-chat function (spend capped platform-side). It ships
+    // in this public page by design; rotated/removed after the hackathon.
     const login = await fetch(`https://api.butterbase.ai/auth/app_7m70nwelqpk6/login`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: "web-demo@sage-tutor.dev", password: "SageDemo2026!web" }) });
