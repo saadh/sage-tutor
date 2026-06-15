@@ -117,20 +117,55 @@ async function bget(path) { const r = await fetch(API + path); if (!r.ok) throw 
 async function bpost(path, body) { const r = await fetch(API + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); return r.ok ? r.json() : null; }
 async function bpatch(path, body) { return fetch(API + path, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); }
 
-/* ---------- web-only start (no iMessage required) ---------- */
-function renderStartCard(reason) {
+/** Demo end-user JWT for calling deployed /fn/* functions from the browser.
+ *  Cached in localStorage (the auth endpoint is rate-limited; a JWT lasts ~1h). */
+async function getDemoJwt() {
+  let jwt = localStorage.getItem("sage_demo_jwt");
+  if (jwt) return jwt;
+  // INTENTIONAL public demo credential (gitguardian:ignore) — a throwaway
+  // Butterbase end-user whose only extra capability over anonymous is invoking
+  // the tutor-chat / sprint-memory functions (spend capped platform-side). It
+  // ships in this public page by design; rotated/removed after the hackathon.
+  const login = await fetch(`https://api.butterbase.ai/auth/app_7m70nwelqpk6/login`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "web-demo@sage-tutor.dev", password: "SageDemo2026!web" }) });
+  if (!login.ok) throw new Error(`login ${login.status}: ${(await login.text()).slice(0, 80)}`);
+  jwt = (await login.json()).access_token;
+  if (!jwt) throw new Error("login returned no token");
+  localStorage.setItem("sage_demo_jwt", jwt);
+  return jwt;
+}
+
+/* ---------- web start (email = identity, asked up front) ----------
+   Email is the account key, so a returning student's history loads from
+   question 1 → entry difficulty, weak-topic bias, and "no repeat" all apply,
+   and the finished sprint is written to XTrace memory under their id. */
+let studentName = null, studentEmail = null, studentXtraceId = null;
+
+function renderStartCard() {
   $("#quiz").innerHTML = `
     <h2>Start a practice sprint</h2>
-    <p style="color:var(--muted);font-size:13.5px;margin:6px 0 16px">${reason} Ten adaptive questions — Sage remembers you by phone number across sessions.</p>
-    <input id="wphone" placeholder="Phone number (your Sage identity, e.g. +15551234567)" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;margin-bottom:10px">
+    <p style="color:var(--muted);font-size:13.5px;margin:6px 0 16px">Ten adaptive questions that adjust to how you answer. Your email saves your progress and tailors future sprints to you.</p>
+    <input id="wname" placeholder="Your name" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;margin-bottom:10px">
+    <input id="wemail" type="email" placeholder="Email (saves your progress)" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;margin-bottom:10px" onkeydown="if(event.key==='Enter')webStart()">
+    <div id="werr" style="color:var(--wrong);font-size:12.5px;margin-bottom:10px;display:none">Enter a valid email to save your progress.</div>
     <button class="primary" style="width:100%" onclick="webStart()">Begin sprint →</button>`;
 }
 async function webStart() {
-  const phone = ($("#wphone").value.trim() || `web-guest-${Math.random().toString(36).slice(2, 8)}`).replace(/[^0-9a-z+\-]/gi, "");
+  const name = ($("#wname")?.value.trim()) || studentName || "";
+  const email = (($("#wemail")?.value ?? studentEmail) || "").trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    if ($("#werr")) $("#werr").style.display = "block";
+    ($("#wemail") || $("#wname"))?.focus();
+    return;
+  }
+  studentName = name; studentEmail = email;
+  studentXtraceId = "student-" + email.replace(/[^a-z0-9]/gi, "");
   $("#quiz").innerHTML = `<p style="color:var(--muted)">Setting up your sprint…</p>`;
-  // get-or-create the student, then open a session — all straight to Butterbase
-  let user = (await bget(`/users?phone=eq.${encodeURIComponent(phone)}&limit=1`))[0];
-  if (!user) user = await bpost("/users", { phone, verified_at: new Date().toISOString() });
+  // get-or-create by email (identity). phone is NOT NULL → synthesize from email.
+  let user = (await bget(`/users?email=eq.${encodeURIComponent(email)}&limit=1`))[0];
+  if (!user) user = await bpost("/users", { email, name: name || null, phone: "web:" + email });
+  else if (name && user.name !== name) await bpatch(`/users/${user.id}`, { name });
   if (!user?.id) { $("#quiz").innerHTML = "<p>Could not create your account — try again.</p>"; return; }
   const tok = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join("");
   const sess = await bpost("/sessions", { user_id: user.id, mode: "sprint", state: "in_question", web_token: tok });
@@ -141,11 +176,41 @@ async function webStart() {
 }
 
 async function boot() {
-  if (!token) return renderStartCard("No iMessage needed —");
-  const sess = await bget(`/sessions?web_token=eq.${encodeURIComponent(token)}&limit=1`);
-  if (!sess.length) return renderStartCard("That session link expired.");
-  session = sess[0];
-  await hydrate();
+  if (token) {
+    const sess = await bget(`/sessions?web_token=eq.${encodeURIComponent(token)}&limit=1`);
+    if (!sess.length) { studentName = studentEmail = null; return renderStartCard(); }
+    session = sess[0];
+    return hydrate();
+  }
+  // Landing page hands off name+email via sessionStorage (keeps PII out of the URL).
+  try { const s = JSON.parse(sessionStorage.getItem("sage_start") || "null"); if (s) { studentName = s.name || null; studentEmail = s.email || null; } } catch {}
+  if (studentEmail) return webStart();
+  renderStartCard();
+}
+
+/** Entry difficulty from past performance (mirrors bot/lib/engine.ts). */
+function entryDifficultyWeb() {
+  const lv = Object.values(mastery).map(m => m.level);
+  if (!lv.length) return SETTINGS.DEFAULT_ENTRY_LEVEL;
+  const avg = lv.reduce((a, b) => a + b, 0) / lv.length;
+  return Math.max(1, Math.min(5, Math.round(avg)));
+}
+/** Every qid this student already answered — to avoid re-serving them.
+ *  Relaxes (returns []) if excluding would starve the pool below one sprint. */
+async function loadAnsweredQidsWeb(user_id) {
+  try {
+    const sess = await bget(`/sessions?user_id=eq.${user_id}&select=id&limit=300`);
+    const ids = sess.map(s => s.id);
+    const qids = new Set();
+    for (let i = 0; i < ids.length; i += 50) {
+      const chunk = ids.slice(i, i + 50).join(",");
+      if (!chunk) continue;
+      const rows = await bget(`/attempts?session_id=in.(${chunk})&select=qid&limit=2000`);
+      for (const r of rows) if (r.qid) qids.add(r.qid);
+    }
+    if (QUESTIONS.length - qids.size < SETTINGS.SESSION_LEN + 5) return [];
+    return [...qids];
+  } catch { return []; }
 }
 
 async function hydrate() {
@@ -160,11 +225,16 @@ async function hydrate() {
     hints: typeof q.hints === "string" ? JSON.parse(q.hints) : q.hints,
     distractor_diagnoses: typeof q.distractor_diagnoses === "string" ? JSON.parse(q.distractor_diagnoses) : q.distractor_diagnoses }));
 
-  S = typeof session.sprint_state === "string" ? JSON.parse(session.sprint_state) : session.sprint_state;
-  if (!S) S = { difficulty: 2, streak: 0, missStreak: 0, lastTopic: null, askedQids: [], history: [] };
-
+  // Past performance first — it seeds a fresh sprint's difficulty + exclusions.
   const mrows = await bget(`/mastery?user_id=eq.${session.user_id}&limit=100`);
   for (const m of mrows) mastery[m.topic] = m;
+
+  S = typeof session.sprint_state === "string" ? JSON.parse(session.sprint_state) : session.sprint_state;
+  if (!S) {
+    // Fresh sprint → start at the student's level and skip questions they've done.
+    S = { difficulty: entryDifficultyWeb(), streak: 0, missStreak: 0, lastTopic: null, askedQids: [], history: [] };
+    if (studentXtraceId) S.askedQids = await loadAnsweredQidsWeb(session.user_id); // identified web sprint only
+  }
 
   if (session.state === "done" || S.history.length >= SETTINGS.SESSION_LEN) return renderSummary();
 
@@ -283,7 +353,44 @@ function next() {
 async function finishSprint() {
   const h = S.history, nC = h.filter(x => x.correct).length;
   await bpatch(`/sessions/${session.id}`, { state: "done", ended_at: new Date().toISOString(), score: nC, sprint_state: JSON.stringify(S) });
+  // Write this sprint to XTrace memory — web-start sprints only (a token-mode
+  // sprint came from iMessage, where the bot already writes the episode).
+  if (studentXtraceId) writeMemory(buildSummary());
   renderSummary();
+}
+/** Sprint summary shaped for the sprint-memory function (mirrors engine.summarize). */
+function buildSummary() {
+  const h = S.history;
+  const byTopic = {};
+  h.forEach(x => { const t = byTopic[x.topic] || { c: 0, n: 0 }; t.n++; if (x.correct) t.c++; byTopic[x.topic] = t; });
+  const timed = h.filter(x => x.secs != null);
+  return {
+    sessionId: session.id,
+    nCorrect: h.filter(x => x.correct).length,
+    total: h.length,
+    avgSecs: timed.length ? Math.round(timed.reduce((a, x) => a + x.secs, 0) / timed.length) : null,
+    peakDifficulty: h.length ? Math.max(...h.map(x => x.difficulty)) : 0,
+    resumeDifficulty: S.difficulty,
+    strengths: Object.entries(byTopic).filter(([, v]) => v.c === v.n && v.n > 0).map(([t]) => t),
+    gaps: Object.entries(byTopic).filter(([, v]) => v.c < v.n).map(([t]) => t),
+  };
+}
+/** Persist the finished sprint to XTrace via the sprint-memory function.
+ *  Path 1 (localhost): the bot's /api proxy. Path 2 (deployed): the demo JWT. */
+async function writeMemory(summary) {
+  const payload = JSON.stringify({ user_id: studentXtraceId, mode: "sprint", summary });
+  const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
+  const tryLocal = async () => { const r = await fetch("/api/sprint-memory", { method: "POST", headers: { "Content-Type": "application/json" }, body: payload }); if (!r.ok) throw new Error("local " + r.status); return r.json(); };
+  const tryFn = async () => {
+    const jwt = await getDemoJwt();
+    const r = await fetch(`${API}/fn/sprint-memory`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` }, body: payload });
+    if (r.status === 401) { localStorage.removeItem("sage_demo_jwt"); throw new Error("jwt expired"); }
+    if (!r.ok) throw new Error("fn " + r.status);
+    return r.json();
+  };
+  for (const attempt of (isLocal ? [tryLocal, tryFn] : [tryFn, tryFn])) {
+    try { const d = await attempt(); console.log("memory saved:", d); return; } catch (e) { console.warn("memory write failed:", e?.message); }
+  }
 }
 function renderSummary() {
   const h = S.history, nC = h.filter(x => x.correct).length;
@@ -293,6 +400,9 @@ function renderSummary() {
   h.forEach(x => { const t = byTopic[x.topic] || { c: 0, n: 0 }; t.n++; if (x.correct) t.c++; byTopic[x.topic] = t; });
   const strengths = Object.entries(byTopic).filter(([,v]) => v.c === v.n && v.n > 0).map(([t]) => topicName(t));
   const gaps = Object.entries(byTopic).filter(([,v]) => v.c < v.n).map(([t]) => topicName(t));
+  const closing = studentEmail
+    ? `<p style="color:var(--accent);font-size:13.5px;margin-top:14px;font-weight:600">✓ Saved to ${esc(studentEmail)} — come back anytime and Sage picks up where you left off.</p>`
+    : `<p style="color:var(--muted);font-size:13px;margin-top:14px">Sage just memorized this sprint — it'll text you a follow-up on your weakest topic. Check your iMessages 📱</p>`;
   $("#quiz").innerHTML = `
     <h2>🏁 Sprint complete</h2>
     <div class="score-line"><span class="big">${nC}/${h.length}</span>
@@ -302,7 +412,8 @@ function renderSummary() {
     <div class="sumsec"><b>💪 What you did well</b>${strengths.length ? strengths.join(", ") : "Keep at it — strengths show up with reps."}</div>
     <div class="sumsec"><b>🎯 Needs improvement</b>${gaps.length ? gaps.join(", ") : "No gaps this sprint!"}</div>
     <div class="sumsec"><b>📚 What you practiced</b>${Object.entries(byTopic).map(([t, v]) => `${topicName(t)} ${v.c}/${v.n}`).join(" · ")}</div>
-    <p style="color:var(--muted);font-size:13px;margin-top:14px">Sage just memorized this sprint — it'll text you a follow-up on your weakest topic. Check your iMessages 📱</p>`;
+    ${closing}
+    <div style="margin-top:16px"><button class="primary" onclick="location.href='/'">Practice again →</button></div>`;
 }
 
 /* ---------- tutor chat ---------- */
@@ -327,26 +438,8 @@ async function askSage(mode, userText = null, diagnosis = null) {
     if (!r.ok) throw new Error(`local api ${r.status}`);
     return r.json();
   };
-  const getJwt = async () => {
-    // localStorage cache: the auth endpoint is rate-limited (10/15min) —
-    // a JWT lasts an hour, so login once and reuse across answers AND reloads.
-    let jwt = localStorage.getItem("sage_demo_jwt");
-    if (jwt) return jwt;
-    // INTENTIONAL public demo credential (gitguardian:ignore) — a throwaway
-    // Butterbase end-user whose only extra capability over anonymous is
-    // invoking the tutor-chat function (spend capped platform-side). It ships
-    // in this public page by design; rotated/removed after the hackathon.
-    const login = await fetch(`https://api.butterbase.ai/auth/app_7m70nwelqpk6/login`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "web-demo@sage-tutor.dev", password: "SageDemo2026!web" }) });
-    if (!login.ok) throw new Error(`login ${login.status}: ${(await login.text()).slice(0, 80)}`);
-    jwt = (await login.json()).access_token;
-    if (!jwt) throw new Error("login returned no token");
-    localStorage.setItem("sage_demo_jwt", jwt);
-    return jwt;
-  };
   const tryFn = async () => {
-    const jwt = await getJwt();
+    const jwt = await getDemoJwt();
     const r = await fetch(`https://api.butterbase.ai/v1/app_7m70nwelqpk6/fn/tutor-chat`, {
       method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` }, body: payload });
     if (r.status === 401) { localStorage.removeItem("sage_demo_jwt"); throw new Error("jwt expired"); }

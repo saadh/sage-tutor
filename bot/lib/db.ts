@@ -108,6 +108,19 @@ export async function insertAttempt(a: {
 export async function listAttempts(session_id: string) {
   return api<any[]>("GET", `/attempts?session_id=eq.${session_id}&order=ts.asc&limit=100`);
 }
+/** Every qid this user has already answered (across all their sessions) —
+ *  used to avoid re-serving previously completed questions. */
+export async function loadAnsweredQids(user_id: string): Promise<Set<string>> {
+  const sessions = await api<{ id: string }[]>("GET", `/sessions?user_id=eq.${user_id}&select=id&limit=300`);
+  const qids = new Set<string>();
+  for (let i = 0; i < sessions.length; i += 50) {
+    const chunk = sessions.slice(i, i + 50).map((s) => s.id).join(",");
+    if (!chunk) continue;
+    const rows = await api<{ qid: string }[]>("GET", `/attempts?session_id=in.(${chunk})&select=qid&limit=2000`);
+    for (const r of rows) if (r.qid) qids.add(r.qid);
+  }
+  return qids;
+}
 
 // ---------- mastery ----------
 export async function loadMastery(user_id: string): Promise<Map<string, MasteryRow & { id?: string }>> {

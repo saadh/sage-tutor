@@ -3,99 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sage — the tutor that never forgets you</title>
+<title>Sage — adaptive GMAT/GRE quant tutor</title>
 <style>
   :root { --bg:#f7f6f3; --card:#fff; --ink:#1a1a18; --muted:#8a8782; --accent:#2f6f4f;
-    --accent-soft:#e8f2ec; --gold:#c9a227; --border:#e7e4de; --radius:14px; }
+    --border:#e7e4de; --radius:14px; }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    background:var(--bg); color:var(--ink); min-height:100vh; }
-  .hero { max-width:980px; margin:0 auto; padding:64px 24px 40px; text-align:center; }
-  .leaf { color:var(--accent); }
-  h1 { font-size:44px; letter-spacing:-1.2px; line-height:1.15; margin:18px 0 14px; }
-  .sub { color:var(--muted); font-size:18px; line-height:1.6; max-width:620px; margin:0 auto 16px; }
-  .pill { display:inline-flex; gap:8px; align-items:center; font-size:13px; background:var(--accent-soft);
-    color:var(--accent); padding:6px 14px; border-radius:99px; font-weight:600; }
-  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; max-width:880px; margin:36px auto; padding:0 24px; }
-  @media (max-width:760px){ .grid{grid-template-columns:1fr} }
-  .feat { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; text-align:left; }
-  .feat b { display:block; margin-bottom:6px; font-size:15px; }
-  .feat p { color:var(--muted); font-size:13.5px; line-height:1.55; }
-  .signup { max-width:440px; margin:8px auto 60px; background:var(--card); border:1px solid var(--border);
-    border-radius:var(--radius); padding:28px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
-  .signup h2 { font-size:18px; margin-bottom:4px; }
-  .signup .s { color:var(--muted); font-size:13px; margin-bottom:18px; }
-  .signup input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px;
-    font-family:inherit; font-size:14px; margin-bottom:10px; }
-  .primary { width:100%; padding:13px; border:none; border-radius:10px; background:var(--accent);
+    background:var(--bg); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; }
+  main { flex:1; display:flex; align-items:center; justify-content:center; padding:32px 20px; }
+  .box { width:100%; max-width:400px; text-align:center; }
+  .brand { font-size:15px; font-weight:600; color:var(--accent); margin-bottom:28px; }
+  .brand .leaf { margin-right:6px; }
+  h1 { font-size:30px; letter-spacing:-0.6px; line-height:1.2; margin-bottom:10px; }
+  .sub { color:var(--muted); font-size:15px; line-height:1.55; margin-bottom:26px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px; box-shadow:0 1px 3px rgba(0,0,0,.04); text-align:left; }
+  label { display:block; font-size:13px; font-weight:600; margin-bottom:7px; }
+  input { width:100%; padding:13px 14px; border:1.5px solid var(--border); border-radius:10px;
+    font-family:inherit; font-size:15px; margin-bottom:14px; }
+  input:focus { outline:none; border-color:var(--accent); }
+  button { width:100%; padding:14px; border:none; border-radius:10px; background:var(--accent);
     color:#fff; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
-  .primary:disabled { opacity:.5; }
-  .note { font-size:12.5px; color:var(--muted); margin-top:12px; line-height:1.5; }
-  .ok { background:var(--accent-soft); border:1px solid #cfe3d8; border-radius:10px; padding:14px; font-size:14px; line-height:1.5; }
-  footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
-  footer a { color:var(--accent); }
+  button:disabled { opacity:.5; }
+  #err { display:none; color:#b4452f; font-size:12.5px; margin-bottom:10px; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:20px; }
+  footer a { color:var(--accent); text-decoration:none; }
 </style>
 </head>
 <body>
-  <div class="hero">
-    <span class="pill"><span class="leaf">●</span> Sage · GMAT/GRE quant tutor in your iMessages</span>
-    <h1>The tutor that<br>never forgets you</h1>
-    <p class="sub">Adaptive 10-question sprints over iMessage. Sage learns exactly where you struggle,
-    teaches you at the moment you're stuck, and texts you first when it's time to practice.</p>
-  </div>
-  <div class="grid">
-    <div class="feat"><b>📱 Lives in your texts</b><p>No app to install. Sage texts you a question; you reply A–E. Hints, walkthroughs, and full tutoring in the thread.</p></div>
-    <div class="feat"><b>🧠 Remembers everything</b><p>Every sprint updates a living model of what you know. "Last time geometry gave you trouble — let's warm up there."</p></div>
-    <div class="feat"><b>⚖️ Adapts as you answer</b><p>Two right in a row? Difficulty steps up. Struggling? Sage eases off and teaches instead of punishing.</p></div>
-  </div>
-  <div class="signup" id="signup">
-    <h2>Start practicing in 30 seconds</h2>
-    <p class="s">Your sprint starts right here in the browser — and Sage will also text you so the iMessage tutor is one reply away.</p>
-    <input id="name" placeholder="Your name">
-    <input id="phone" placeholder="Phone number (e.g. +15551234567)" inputmode="tel">
-    <input id="exam" type="date" title="Exam date (optional)">
-    <button class="primary" id="btn" onclick="signup()">Start my first sprint →</button>
-    <p class="note" style="text-align:center;margin-top:10px">or <a href="/sprint.html" style="color:var(--accent);font-weight:600">practice on the web right now →</a> (no phone needed)</p>
-    <p class="note">Your phone number is your account — verified by your reply, no password ever.
-    By signing up you agree to receive practice texts from Sage.</p>
-  </div>
-  <footer>Built on RocketRide · Butterbase · XTrace · Photon — <a href="/about.html">project description</a> · <a href="https://github.com/saadh/sage-tutor">source code</a> · <a href="/admin.html">admin</a></footer>
+  <main>
+    <div class="box">
+      <div class="brand"><span class="leaf">●</span>Sage</div>
+      <h1>Ready to practice?</h1>
+      <p class="sub">Ten adaptive GMAT/GRE quant questions that adjust to how you answer. Your email saves your progress and tailors future sprints to you.</p>
+      <div class="card">
+        <label for="name">Your name</label>
+        <input id="name" placeholder="e.g. Alex" autocomplete="given-name">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@email.com" autocomplete="email"
+               onkeydown="if(event.key==='Enter')start()">
+        <div id="err">Enter your name and a valid email to begin.</div>
+        <button id="btn" onclick="start()">Start sprint →</button>
+      </div>
+    </div>
+  </main>
+  <footer>
+    Built on RocketRide · Butterbase · XTrace · Photon —
+    <a href="/about.html">how it works</a>
+  </footer>
 <script>
-async function signup() {
+function start() {
   const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const exam = document.getElementById("exam").value || null;
-  if (!phone.match(/^\+?[0-9 \-()]{8,}$/)) { alert("Enter a valid phone number incl. country code"); return; }
-  const btn = document.getElementById("btn");
-  btn.disabled = true; btn.textContent = "Starting your sprint…";
-  const norm = phone.replace(/[^0-9+]/g, "");
-  const API = "https://api.butterbase.ai/v1/app_7m70nwelqpk6";
-
-  // 1) fire the iMessage hello in the background — a bonus, never a gate
-  fetch("/api/signup", { method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, phone: norm, exam_date: exam }) }).catch(() => {});
-
-  try {
-    // 2) ensure the account exists (phone = identity)
-    let user = (await (await fetch(`${API}/users?phone=eq.${encodeURIComponent(norm)}&limit=1`)).json())[0];
-    if (!user) {
-      const r = await fetch(`${API}/users`, { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: norm, name: name || null, exam_date: exam }) });
-      if (r.ok) user = await r.json();
-      else user = (await (await fetch(`${API}/users?phone=eq.${encodeURIComponent(norm)}&limit=1`)).json())[0];
-    }
-    if (!user?.id) throw new Error("account creation failed");
-
-    // 3) open a sprint session and go — the web IS the product entrance
-    const tok = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join("");
-    const sess = await (await fetch(`${API}/sessions`, { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: user.id, mode: "sprint", state: "in_question", web_token: tok }) })).json();
-    if (!sess?.id) throw new Error("could not open a session");
-    location.href = `/sprint.html?token=${tok}`;
-  } catch (e) {
-    btn.disabled = false; btn.textContent = "Start my first sprint →";
-    alert("Could not start: " + e.message);
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const ok = name && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+  if (!ok) {
+    document.getElementById("err").style.display = "block";
+    (name ? document.getElementById("email") : document.getElementById("name")).focus();
+    return;
   }
+  // Hand off via sessionStorage so the email never rides in the URL.
+  sessionStorage.setItem("sage_start", JSON.stringify({ name, email }));
+  location.href = "/sprint.html";
 }
 </script>
 </body>

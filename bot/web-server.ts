@@ -57,6 +57,20 @@ export function startWebServer(port = 8420, hooks: WebHooks = {}) {
         return json(200, { key: hooks.geminiKey ?? null });
       }
 
+      // ---- API: sprint memory (proxied to the Butterbase function → XTrace) ----
+      if (url.pathname === "/api/sprint-memory" && req.method === "POST") {
+        const chunks: Buffer[] = [];
+        for await (const c of req) chunks.push(c as Buffer);
+        const fnRes = await fetch(`${BASE}/functions/sprint-memory/invoke`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
+          body: Buffer.concat(chunks),
+        });
+        const body = await fnRes.text();
+        res.writeHead(fnRes.status, { "Content-Type": "application/json" });
+        return res.end(body);
+      }
+
       // ---- API: tutor chat (proxied to the Butterbase function) ----
       if (url.pathname === "/api/tutor-chat" && req.method === "POST") {
         const chunks: Buffer[] = [];

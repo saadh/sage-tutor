@@ -13,7 +13,7 @@ import { terminal } from "spectrum-ts/providers/terminal";
 import { imessage } from "spectrum-ts/providers/imessage";
 import crypto from "node:crypto";
 
-import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery, getOpenSession } from "./lib/db.ts";
+import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery, getOpenSession, loadAnsweredQids } from "./lib/db.ts";
 import { newSprintState, pickQuestion, recordAnswer, entryDifficulty, summarize, type Question, type SprintState, type MasteryRow } from "./lib/engine.ts";
 import { recallStudentContext, recordStruggle, recordSprintEpisode } from "./lib/memory.ts";
 import { initTutorPipeline, tutorRespond } from "./lib/tutor.ts";
@@ -109,6 +109,18 @@ async function startSprint(L: Live, send: (t: string) => Promise<void>) {
   const settings = await loadSettings();
   L.mastery = await loadMastery(L.userId);
   L.state = newSprintState(entryDifficulty(L.mastery, settings));
+  // Don't re-serve questions this student already completed (across all past
+  // sprints). Relax the exclusion if it would starve the pool below one sprint.
+  try {
+    const answered = await loadAnsweredQids(L.userId);
+    const servable = await loadServableQuestions();
+    if (answered.size && servable.length - answered.size >= settings.sessionLen + 5) {
+      L.state.askedQids = [...answered];
+      console.log(`seeded ${answered.size} answered qids to exclude for ${L.userId.slice(0, 8)}`);
+    }
+  } catch (e) {
+    console.error("answered-qid seed failed (serving full pool):", e);
+  }
   L.webToken = crypto.randomBytes(12).toString("hex");
   const session = await createSession(L.userId, "sprint", L.webToken);
   L.sessionId = session.id;
@@ -366,13 +378,25 @@ async function makeApp() {
       const space = await im.space(target);
       await space.send(text);
     };
-    // Boot hello DISABLED: it fired on every supervisor restart, flooding the
-    // recipient from a shared sender pool — prime anti-spam throttle bait.
-    // Send manually when needed: SAGE_SEND_HELLO=1 npm run dev:sage
-    if (MY_PHONE && process.env.SAGE_SEND_HELLO === "1") {
+    // Text the user FIRST to open a LIVE thread. Photon's free tier has no
+    // stable inbound number — replies only route back inside a thread the agent
+    // has freshly opened. Without this, the user's "start" lands on a stale
+    // thread and nothing happens (the bug that made iMessage look dead).
+    // Throttled via a marker file so supervisor restarts don't re-text/spam.
+    // Disable explicitly with SAGE_SEND_HELLO=0.
+    if (MY_PHONE && process.env.SAGE_SEND_HELLO !== "0") {
       try {
-        await imSendTo(MY_PHONE, `Sage here 🎓 Text "start" for a sprint.`);
-        console.log(`Outbound hello sent to ${MY_PHONE}.`);
+        const fs = await import("node:fs");
+        const marker = new URL("./.last-hello", import.meta.url);
+        let last = 0;
+        try { last = +fs.readFileSync(marker, "utf8") || 0; } catch {}
+        if (Date.now() - last > 10 * 60_000) {
+          await imSendTo(MY_PHONE, `Sage here 🎓 Reply "start" in this thread for a 10-question sprint.`);
+          fs.writeFileSync(marker, String(Date.now()));
+          console.log(`Outbound hello sent to ${MY_PHONE} — reply "start" in that thread.`);
+        } else {
+          console.log(`Boot hello skipped (sent <10min ago). Force with: rm bot/.last-hello`);
+        }
       } catch (err) {
         console.error("Outbound iMessage failed:", err);
       }

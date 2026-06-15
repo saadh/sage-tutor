@@ -7,6 +7,9 @@
     "dev": "node --env-file-if-exists=.env --import tsx echo.ts",
     "smoke:xtrace": "node --env-file-if-exists=.env --import tsx xtrace-smoke.ts",
     "dev:sage": "node --env-file-if-exists=.env --import tsx sage.ts",
+    "probe:imessage": "node --env-file-if-exists=.env --import tsx send-test.ts",
+    "report": "node --env-file-if-exists=.env --import tsx report.ts",
+    "xtrace:dump": "node --env-file-if-exists=.env --import tsx xtrace-dump.ts",
     "seed:demo": "node --env-file-if-exists=.env --import tsx seed-demo.ts"
   },
   "keywords": [],
