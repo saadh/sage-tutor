@@ -269,8 +269,11 @@ function pickQuestion() {
   const cands = QUESTIONS.filter(q => !S.askedQids.includes(q.qid));
   if (!cands.length) return null;
   const topic = pickTopic(cands), want = S.difficulty;
-  const tries = [q => q.topic === topic && q.difficulty === want, q => q.topic === topic && Math.abs(q.difficulty - want) === 1,
-    q => q.topic === topic, q => q.difficulty === want, () => true];
+  // Exact difficulty first (mirror of lib/engine.ts) so the served question
+  // matches the announced level; topic preferred when the level exists in it.
+  const tries = [q => q.topic === topic && q.difficulty === want, q => q.difficulty === want,
+    q => q.topic === topic && Math.abs(q.difficulty - want) <= 1, q => Math.abs(q.difficulty - want) <= 1,
+    q => q.topic === topic, () => true];
   for (const f of tries) { const c = cands.filter(f); if (c.length) { const q = c[Math.floor(Math.random() * c.length)]; S.askedQids.push(q.qid); S.lastTopic = q.topic; return q; } }
   return null;
 }

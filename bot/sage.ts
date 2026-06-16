@@ -13,13 +13,15 @@ import { terminal } from "spectrum-ts/providers/terminal";
 import { imessage } from "spectrum-ts/providers/imessage";
 import crypto from "node:crypto";
 
-import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery, getOpenSession, loadAnsweredQids } from "./lib/db.ts";
+import { loadSettings, loadServableQuestions, getOrCreateUser, createSession, updateSession, insertAttempt, insertNudge, loadMastery, saveMastery, getOpenSession, loadAnsweredQids, listRecentSessions, listAttempts } from "./lib/db.ts";
 import { newSprintState, pickQuestion, recordAnswer, entryDifficulty, summarize, type Question, type SprintState, type MasteryRow } from "./lib/engine.ts";
 import { recallStudentContext, recordStruggle, recordSprintEpisode } from "./lib/memory.ts";
 import { initTutorPipeline, tutorRespond } from "./lib/tutor.ts";
 import { startWebServer } from "./web-server.ts";
 
-const WEB_BASE = process.env.SAGE_WEB_BASE ?? "http://localhost:8420";
+// Public deployed site by default — the links go to a phone, not the dev box.
+// Override with SAGE_WEB_BASE=http://localhost:8420 for local web testing.
+const WEB_BASE = process.env.SAGE_WEB_BASE ?? "https://sage-tutor.butterbase.dev";
 
 // ---------- per-user runtime state ----------
 type Phase = "idle" | "in_question" | "awaiting_walkthrough";
@@ -38,11 +40,16 @@ interface Live {
   pendingMicroTopic?: string | null; // set when a nudge was sent, awaiting "go"
   microTopic?: string | null; // active micro-session topic filter
   microLen?: number;
+  warmupTopic?: string | null; // first question warms up on the recalled weak topic
 }
 const live = new Map<string, Live>(); // key = sender id (phone)
 
 const topicName = (t: string) => t.replace(/-/g, " ");
 const dots = (d: number) => "●".repeat(d) + "○".repeat(5 - d);
+// Recognize "move on" intent generously so the student is never trapped on a
+// question by a tutor that won't relent.
+const wantsNext = (t: string) =>
+  t === "n" || /\b(next|skip|move\s?on|moving on|continue|another(\s+question)?|new question|move ahead|forget it)\b/i.test(t);
 
 function questionCard(q: Question, n: number, total: number): string {
   const choices = q.choices.map((c) => `${c.label}) ${c.text.replace(/^[A-E]\)\s*/, "")}`).join("\n");
@@ -105,6 +112,51 @@ function memoryLine(ctx: string | null): string | null {
   return `Welcome back — picking up where we left off. 🎯`;
 }
 
+/** Greeting from the student's ACTUAL most recent session (Butterbase truth),
+ *  not a blended XTrace recall — names the topic they really struggled with last
+ *  time, and returns it as the warm-up topic. */
+async function recentSessionGreeting(L: Live): Promise<{ greet: string | null; warmup: string | null }> {
+  try {
+    const sessions = await listRecentSessions(L.userId, 12);
+    const topicOf = new Map((await loadServableQuestions()).map((q) => [q.qid, q.topic]));
+    for (const s of sessions) {
+      if (s.id === L.sessionId) continue; // skip the sprint we just opened
+      const attempts = await listAttempts(s.id);
+      if (!attempts.length) continue; // most recent session that actually has answers
+      const byTopic: Record<string, { c: number; n: number }> = {};
+      for (const a of attempts) {
+        const t = topicOf.get(a.qid);
+        if (!t) continue;
+        const e = (byTopic[t] ||= { c: 0, n: 0 });
+        e.n++;
+        if (a.correct) e.c++;
+      }
+      const gaps = Object.entries(byTopic)
+        .filter(([, v]) => v.c < v.n)
+        .map(([t, v]) => ({ t, miss: v.n - v.c, acc: v.c / v.n }))
+        .sort((a, b) => b.miss - a.miss || a.acc - b.acc);
+      if (gaps.length) return { greet: `Welcome back — last time ${topicName(gaps[0].t)} gave you trouble. Let's warm up there. 🎯`, warmup: gaps[0].t };
+      const strong = Object.entries(byTopic).filter(([, v]) => v.c === v.n && v.n > 0);
+      if (strong.length) return { greet: `Welcome back — you nailed ${topicName(strong[0][0])} last time. Let's build on it. 🎯`, warmup: null };
+      return { greet: `Welcome back — let's keep it rolling. 🎯`, warmup: null };
+    }
+  } catch (e) {
+    console.error("recent-session greeting failed:", e);
+  }
+  return { greet: null, warmup: null };
+}
+
+/** The recalled weak topic, mapped to a real topic key in the pool — so the
+ *  greeting's "let's warm up there" is kept by actually serving that topic. */
+async function recalledWeakTopicKey(ctx: string | null): Promise<string | null> {
+  if (!ctx) return null;
+  const struggle = ctx.match(/(?:struggles? with|weak at|worst topic[^a-z]*is) ([a-z\- ]+?)[\.\;,]/i)?.[1]?.trim();
+  if (!struggle) return null;
+  const topics = new Set((await loadServableQuestions()).map((q) => q.topic));
+  const key = struggle.replace(/\s+/g, "-");
+  return topics.has(key) ? key : topics.has(struggle) ? struggle : null;
+}
+
 async function startSprint(L: Live, send: (t: string) => Promise<void>) {
   const settings = await loadSettings();
   L.mastery = await loadMastery(L.userId);
@@ -132,8 +184,16 @@ async function startSprint(L: Live, send: (t: string) => Promise<void>) {
 
   // memory line (hard 2.5s budget) then Q1 — two SHORT sends beat one long one
   // (Photon delivery time scales with message size; short messages land in ~1-2s)
-  const ctx = await recallFast(L.xtraceId);
-  const greet = memoryLine(ctx) ?? `Hi, I'm Sage 🎯 Ten adaptive questions, at your pace.`;
+  // Greet from the student's real most recent session; fall back to XTrace
+  // recall (new-to-Butterbase students), then a generic hello.
+  let { greet, warmup } = await recentSessionGreeting(L);
+  if (!greet) {
+    const ctx = await recallFast(L.xtraceId);
+    greet = memoryLine(ctx) ?? `Hi, I'm Sage 🎯 Ten adaptive questions, at your pace.`;
+    warmup = await recalledWeakTopicKey(ctx).catch(() => null);
+  }
+  // Keep the greeting's promise: warm up on the topic we just named.
+  L.warmupTopic = warmup;
   const card = await nextQuestionCard(L, settings.sessionLen);
   if (!card) return endSprint(L, send);
   // persist Q1 immediately so the web handoff + resume are exact from the start
@@ -165,7 +225,15 @@ async function nextQuestionCard(L: Live, sessionLen: number): Promise<string | n
     if (short.length >= 30) questions = short;
   }
   const len = lenFor(L, sessionLen);
-  const q = L.state!.history.length >= len ? null : pickQuestion(L.state!, questions, L.mastery);
+  if (L.state!.history.length >= len) return null;
+  let q: Question | null = null;
+  // First question warms up on the recalled weak topic (matches the greeting).
+  if (L.state!.history.length === 0 && L.warmupTopic) {
+    const warm = questions.filter((x) => x.topic === L.warmupTopic);
+    if (warm.length) q = pickQuestion(L.state!, warm, L.mastery);
+    L.warmupTopic = null;
+  }
+  if (!q) q = pickQuestion(L.state!, questions, L.mastery);
   if (!q) return null;
   L.current = q;
   L.qSentAt = Date.now();
@@ -320,12 +388,24 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
       const hints = L.current.hints ?? [];
       if (L.hintRung < hints.length) {
         const h = hints[L.hintRung++];
-        return send(`💡 ${L.hintRung}/3: ${h}`);
+        return send(`💡 ${L.hintRung}/3: ${h}\n\nTalk it through with me, or reply A–E when ready.`);
       }
-      return send(`That's all three hints — take your best shot, A–E.`);
+      return send(`That's all three hints — tell me your thinking, or take your best shot A–E.`);
     }
-    // free-text during a question → instant canned nudge (NO agent call in the hot path)
-    return send(`Answer A–E when ready · "hint" for a nudge · "help" for the tutor room.`);
+    // Wants to move on before answering — don't trap them, don't LLM-loop.
+    if (wantsNext(t)) {
+      return send(`No need to nail it — even a guess (A–E) moves us on and I'll explain. Or "stop" to pause.`);
+    }
+    // free-text during a question → the student is thinking out loud (often replying
+    // to a hint). Engage as a tutor, grounded in the rationale, WITHOUT revealing the
+    // answer. Gateway-direct (RocketRide optional), so it works in-thread today.
+    const reply = await tutorRespond({
+      intent: "freeform", freeText: text,
+      questionText: L.current.question,
+      choices: L.current.choices.map((c) => `${c.label}) ${c.text}`).join(" "),
+      rationale: L.current.rationale ?? "",
+    });
+    return send((reply ?? `Tell me which part is tricky — or "hint" for a nudge, "help" to open the tutor room.`) + `\n\n(reply A–E when ready)`);
   }
 
   if (L.phase === "awaiting_walkthrough" && L.lastWrong) {
@@ -339,7 +419,7 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
       await send(wt ?? `Here's the path: ${q.rationale}`);
       return; // stay in awaiting_walkthrough for follow-up questions
     }
-    if (["next", "n", "continue", "skip"].includes(t)) {
+    if (wantsNext(t)) {
       L.phase = "in_question";
       L.lastWrong = null;
       const card = await nextQuestionCard(L, settings.sessionLen);
@@ -352,7 +432,7 @@ async function handleMessage(L: Live, text: string, send: (t: string) => Promise
       choices: q.choices.map((c) => `${c.label}) ${c.text}`).join(" "),
       studentAnswer: answer, correctAnswer: q.correct, rationale: q.rationale ?? "",
     });
-    return send((reply ?? "Good question — look at the rationale step where that comes from.") + `\n\n("next" to continue the sprint)`);
+    return send((reply ?? "Good question — look at the rationale step where that comes from.") + `\n\nSay "next" anytime to move on.`);
   }
 
   return send(`Hi, I'm Sage 🎯 Text "start" for a 10-question adaptive sprint. "stop" pauses anytime.`);

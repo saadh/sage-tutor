@@ -89,6 +89,10 @@ export async function getSessionByToken(token: string): Promise<SessionRow | nul
   const rows = await api<SessionRow[]>("GET", `/sessions?web_token=eq.${encodeURIComponent(token)}&limit=1`);
   return rows[0] ?? null;
 }
+/** Recent sessions (any state), newest first — for the "last time…" greeting. */
+export async function listRecentSessions(user_id: string, limit = 12): Promise<SessionRow[]> {
+  return api<SessionRow[]>("GET", `/sessions?user_id=eq.${user_id}&order=started_at.desc&limit=${limit}&select=id,state,started_at`);
+}
 /** Most recent unfinished sprint for a user (crash/restart resume). */
 export async function getOpenSession(user_id: string): Promise<(SessionRow & { sprint_state?: any }) | null> {
   const rows = await api<(SessionRow & { sprint_state?: any })[]>(

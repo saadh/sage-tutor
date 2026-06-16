@@ -71,11 +71,16 @@ export function pickQuestion(state: SprintState, pool: Question[], mastery: Map<
   if (!candidates.length) return null;
   const topic = pickTopic(state, candidates, mastery);
   const want = state.difficulty;
+  // The announced sprint difficulty must match the question served. Honor the
+  // EXACT level (preferring the chosen topic) before loosening difficulty, so
+  // "stepping up to 3/5" never serves a 2/5 and "easing to 1/5" never serves a
+  // 4/5. Topic is still preferred whenever the exact level exists in it.
   const tries: ((q: Question) => boolean)[] = [
     (q) => q.topic === topic && q.difficulty === want,
-    (q) => q.topic === topic && Math.abs(q.difficulty - want) === 1,
-    (q) => q.topic === topic,
     (q) => q.difficulty === want,
+    (q) => q.topic === topic && Math.abs(q.difficulty - want) <= 1,
+    (q) => Math.abs(q.difficulty - want) <= 1,
+    (q) => q.topic === topic,
     () => true,
   ];
   for (const f of tries) {
